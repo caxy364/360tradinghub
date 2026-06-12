@@ -8,8 +8,8 @@ import brandConfig from '../../../../../brand.config.json';
 
 export const CLIENT_ID = '32UpAZvxBqalqEFHVMTNS';
 
-// Using domain_name from brand.config.json to ensure consistency
-export const REDIRECT_URI = `https://caxynexusaitradinghub.vercel.app/`;
+// Dynamically derived so it works on any host (Replit dev, deployed, custom domain)
+export const REDIRECT_URI = `${window.location.origin}/`;
 
 // Construct WebSocket URLs from platform.derivws config
 export const WS_SERVERS = {
