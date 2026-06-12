@@ -77,6 +77,7 @@ export default defineConfig({
     },
     dev: {
         hmr: true,
+        assetPrefix: '/',
         client: {
             host: process.env.REPLIT_DEV_DOMAIN || '',
             port: '443',
