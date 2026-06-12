@@ -70,6 +70,10 @@ export default defineConfig({
         port: 5000,
         host: '0.0.0.0',
         compress: true,
+        headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate',
+            Pragma: 'no-cache',
+        },
     },
     dev: {
         hmr: true,

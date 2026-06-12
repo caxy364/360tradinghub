@@ -1,5 +1,6 @@
 import { configure } from 'mobx';
 import ReactDOM from 'react-dom/client';
+import 'react-dom/server'; // preload to prevent lazy-chunk factory error in bot-builder toolbox
 import { AuthWrapper } from './app/AuthWrapper';
 // Removed AnalyticsInitializer import - analytics dependency removed
 // See migrate-docs/ANALYTICS_IMPLEMENTATION_GUIDE.md for re-implementation

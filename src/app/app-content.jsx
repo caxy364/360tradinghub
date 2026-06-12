@@ -28,6 +28,15 @@ const AppContent = observer(() => {
     const [is_api_initialized, setIsApiInitialized] = React.useState(false);
     const [is_loading, setIsLoading] = React.useState(true);
 
+    // Hard fallback: always clear the loading screen after 15 seconds so the
+    // app never stays stuck spinning when the Deriv API is unreachable.
+    React.useEffect(() => {
+        const hardTimeout = setTimeout(() => {
+            setIsLoading(false);
+        }, 15000);
+        return () => clearTimeout(hardTimeout);
+    }, []);
+
     const store = useStore();
     const { app, transactions, common, client } = store;
     const { is_dark_mode_on } = useThemeSwitcher();
@@ -120,10 +129,17 @@ const AppContent = observer(() => {
     const changeActiveSymbolLoadingState = () => {
         init();
 
+        // Fallback: always dismiss the spinner after 12 seconds even if the
+        // Deriv API WebSocket is unreachable (e.g. during dev / preview)
+        const loadingFallbackTimeout = setTimeout(() => {
+            setIsLoading(false);
+        }, 12000);
+
         const retrieveActiveSymbols = () => {
             const { active_symbols } = ApiHelpers.instance;
 
             active_symbols.retrieveActiveSymbols(true).then(() => {
+                clearTimeout(loadingFallbackTimeout);
                 setIsLoading(false);
             });
         };

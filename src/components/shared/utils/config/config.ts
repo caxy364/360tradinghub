@@ -26,11 +26,14 @@ export const WS_SERVERS = {
 // Helper Functions
 // =============================================================================
 
-// Helper to check if we're on production domains
+// Helper to check if we're on production domains.
+// Only the explicit staging domain uses staging API; all other environments
+// (production, localhost, Replit dev, preview) use the production API because
+// Deriv's staging API rejects connections from non-whitelisted origins.
 export const isProduction = () => {
     const hostname = window.location.hostname;
-    const productionDomains = Object.values(PRODUCTION_DOMAINS) as string[];
-    return productionDomains.includes(hostname);
+    const stagingDomains = Object.values(STAGING_DOMAINS) as string[];
+    return !stagingDomains.includes(hostname);
 };
 
 export const isLocal = () => /localhost(:\d+)?$/i.test(window.location.hostname);
