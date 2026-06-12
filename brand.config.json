@@ -1,11 +1,11 @@
 {
-    "brand_name": "360 Hub V2",
-    "brand_domain": "caxynexusaitradinghub.vercel.app",
+    "brand_name": "360 Trading Hub",
+    "brand_domain": "",
     "brand_hostname": {
-        "staging": "caxynexusaitradinghub.vercel.app/",
-        "production": "caxynexusaitradinghub.vercel.app/"
+        "staging": "",
+        "production": ""
     },
-    "domain_name": "caxynexusaitradinghub.vercel.app",
+    "domain_name": "",
     "colors": {
         "primary": "#3b82f6",
         "secondary": "#64748b",
