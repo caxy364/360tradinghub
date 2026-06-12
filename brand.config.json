@@ -1,11 +1,11 @@
 {
     "brand_name": "360 Hub V2",
-    "brand_domain": "app.bmtraders.site",
+    "brand_domain": "caxynexusaitradinghub.vercel.app",
     "brand_hostname": {
-        "staging": "staging.bmtraders.site/",
-        "production": "app.bmtraders.site/"
+        "staging": "caxynexusaitradinghub.vercel.app/",
+        "production": "caxynexusaitradinghub.vercel.app/"
     },
-    "domain_name": "app.bmtraders.site",
+    "domain_name": "caxynexusaitradinghub.vercel.app",
     "colors": {
         "primary": "#3b82f6",
         "secondary": "#64748b",
@@ -73,10 +73,10 @@
         },
         "hostname": {
             "production": {
-                "com": "app.bmtraders.site"
+                "com": "caxynexusaitradinghub.vercel.app"
             },
             "staging": {
-                "com": "staging-bot.bmtraders.site"
+                "com": "caxynexusaitradinghub.vercel.app"
             }
         },
         "auth2_url": {
