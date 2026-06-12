@@ -15,7 +15,6 @@ import './app-root.scss';
 
 const Layout = lazy(() => import('../components/layout'));
 const AppRoot = lazy(() => import('./app-root'));
-const SSOLoader = lazy(() => import('../components/sso-loader/sso-loader'));
 
 // Translations CDN is optional — requires TRANSLATIONS_CDN_URL, R2_PROJECT_NAME, and CROWDIN_BRANCH_NAME env vars.
 // Without these, the app defaults to English. See user-guide/03-white-labeling.md#translations for setup instructions.
@@ -55,14 +54,6 @@ const router = createBrowserRouter(
         >
             {/* All child routes will be passed as children to Layout */}
             <Route index element={<AppRoot />} />
-            <Route
-                path='callback'
-                element={
-                    <Suspense fallback={<ChunkLoader message={localize('Getting your account ready...')} />}>
-                        <SSOLoader />
-                    </Suspense>
-                }
-            />
         </Route>
     )
 );
@@ -91,21 +82,24 @@ function App() {
             OAuthTokenExchangeService.exchangeCodeForToken(params.code)
                 .then(response => {
                     if (response.access_token) {
-                        cleanupURL();
+                        // Token exchange succeeded — redirect to home
+                        window.location.replace('/');
                     } else if (response.error) {
                         console.error('❌ Token exchange failed:', response.error);
                         console.error('Error description:', response.error_description);
-                        // Clean up URL even on error
+                        // Clean up URL and return home on error
                         cleanupURL();
+                        window.location.replace('/');
                     }
                 })
-                .catch(error => {
-                    console.error('❌ Token exchange request failed:', error);
-                    // Clean up URL even on error
+                .catch(err => {
+                    console.error('❌ Token exchange request failed:', err);
                     cleanupURL();
+                    window.location.replace('/');
                 });
         } else if (!isProcessing && error) {
             console.error('OAuth callback error:', error);
+            window.location.replace('/');
         }
     }, [isProcessing, isValid, params.code, error, cleanupURL]);
 
