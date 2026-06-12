@@ -6,7 +6,7 @@ import brandConfig from '../../../../../brand.config.json';
 // Constants - Derived from brand.config.json
 // =============================================================================
 
-export const CLIENT_ID = '32UpAZvxBqalqEFHVMTNS';
+export const CLIENT_ID = '33tzpx1fN9o4cX4h5Nrnp';
 
 // Dynamically derived so it works on any host (Replit dev, deployed, custom domain)
 export const REDIRECT_URI = `${window.location.origin}/`;
