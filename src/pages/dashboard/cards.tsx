@@ -79,17 +79,11 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
             ),
             callback: () => {
                 openFileLoader();
-                rudderStackSendOpenEvent({
-                    subpage_name: 'bot_builder',
-                    subform_source: 'dashboard',
-                    subform_name: 'load_strategy',
-                    load_strategy_tab: 'local',
-                });
             },
         },
 
         {
-            id: 'bot-builder',
+            id: 'smart-trader',
             icon: <LuChartArea size={48} color='#17ab0a' />,
             content: (
                 <span style={{ fontWeight: 'bold' }}>
@@ -111,16 +105,10 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
             ),
             callback: () => {
                 setActiveTab(DBOT_TABS.BOTS);
-
-                rudderStackSendOpenEvent({
-                    subpage_name: 'bot_builder',
-                    subform_source: 'dashboard',
-                    subform_name: 'quick_strategy',
-                });
             },
         },
         {
-            id: 'bot-builder',
+            id: 'signal-tools',
             icon: <PiTrafficSignalBold size={48} color='#f5c609ff' />,
             content: (
                 <span style={{ fontWeight: 'bold' }}>

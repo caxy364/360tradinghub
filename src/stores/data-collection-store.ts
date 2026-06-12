@@ -74,21 +74,34 @@ export default class DataCollectionStore {
 
     async trackTransaction(
         contracts: {
-            data: {
-                transaction_ids: {
-                    buy: number;
+            data?: {
+                transaction_ids?: {
+                    buy?: number;
                 };
             };
         }[]
     ) {
+        // Custom tab bots manage their own lifecycle; skip BI posting to avoid noisy 406 responses.
+        const run_id = this.root_store?.run_panel?.run_id || '';
+        if (
+            run_id.startsWith('overlord-') ||
+            run_id.startsWith('elite-premium-') ||
+            run_id.startsWith('elitepremium-')
+        ) {
+            return;
+        }
+
         const pako = await import(/* webpackChunkName: "dbot-collection" */ 'pako');
-        const contract = contracts[0]; // Most recent contract.
+        const contract = contracts.find(item => item?.data?.transaction_ids?.buy); // Most recent valid contract.
 
         if (!contract) {
             return;
         }
 
-        const { buy: transaction_id } = contract.data.transaction_ids;
+        const transaction_id = contract.data?.transaction_ids?.buy;
+        if (!transaction_id) {
+            return;
+        }
         const is_known_transaction = Object.keys(this.transaction_ids).includes(transaction_id.toString());
 
         if (!is_known_transaction) {
