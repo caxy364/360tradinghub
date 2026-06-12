@@ -8,7 +8,7 @@ import brandConfig from '../../../../../brand.config.json';
 
 export const CLIENT_ID = '33tzpx1fN9o4cX4h5Nrnp';
 
-export const REDIRECT_URI = 'https://caxynexusaitradinghub.vercel.app/';
+export const REDIRECT_URI = 'https://caxynexusaitradinghub.vercel.app/callback';
 
 // Construct WebSocket URLs from platform.derivws config
 export const WS_SERVERS = {

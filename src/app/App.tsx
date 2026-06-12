@@ -15,6 +15,7 @@ import './app-root.scss';
 
 const Layout = lazy(() => import('../components/layout'));
 const AppRoot = lazy(() => import('./app-root'));
+const SSOLoader = lazy(() => import('../components/sso-loader/sso-loader'));
 
 // Translations CDN is optional — requires TRANSLATIONS_CDN_URL, R2_PROJECT_NAME, and CROWDIN_BRANCH_NAME env vars.
 // Without these, the app defaults to English. See user-guide/03-white-labeling.md#translations for setup instructions.
@@ -54,6 +55,14 @@ const router = createBrowserRouter(
         >
             {/* All child routes will be passed as children to Layout */}
             <Route index element={<AppRoot />} />
+            <Route
+                path='callback'
+                element={
+                    <Suspense fallback={<ChunkLoader message={localize('Getting your account ready...')} />}>
+                        <SSOLoader />
+                    </Suspense>
+                }
+            />
         </Route>
     )
 );
