@@ -1,8 +1,6 @@
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginSass } from '@rsbuild/plugin-sass';
-import { pluginBasicSsl } from '@rsbuild/plugin-basic-ssl';
-
 const path = require('path');
 
 export default defineConfig({
@@ -18,7 +16,6 @@ export default defineConfig({
             exclude: /node_modules/,
         }),
         pluginReact(),
-        pluginBasicSsl(),
     ],
     source: {
         entry: {
@@ -70,11 +67,17 @@ export default defineConfig({
         template: './index.html',
     },
     server: {
-        port: 8443,
+        port: 5000,
+        host: '0.0.0.0',
         compress: true,
     },
     dev: {
         hmr: true,
+        client: {
+            host: process.env.REPLIT_DEV_DOMAIN || '',
+            port: '443',
+            protocol: 'wss',
+        },
     },
     performance: {
         // Configure Rsbuild's native bundle analyzer
