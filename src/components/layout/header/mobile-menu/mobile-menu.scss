@@ -1,3 +1,9 @@
+.my-logo {
+    width: 42px;
+    height: auto;
+    /* Adds a glow to the logo so it doesn't get lost on dark backgrounds */
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+}
 .mobile-menu {
     height: 100%;
 

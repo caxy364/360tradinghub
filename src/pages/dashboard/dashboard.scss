@@ -1,5 +1,81 @@
 @use 'components/shared/styles/mixins' as *;
 
+
+/* Main Banner Container */
+.disclaimer-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 193, 7, 0.08); /* Very soft amber background */
+    border: 1px solid rgba(255, 193, 7, 0.3); /* Subtle amber border */
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin: 15px 0;
+    gap: 15px;
+    backdrop-filter: blur(4px); /* Modern glass effect */
+    width: fit-content;
+    margin: 0 auto;
+}
+
+/* Content Area */
+.disclaimer-content {
+    display: flex;
+    align-items: center;
+}
+
+/* The Warning Text */
+.disclaimer-text {
+    color: #4a4a4a; /* Dark grey for readability */
+    font-size: 14px;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.4;
+}
+
+.disclaimer-text strong {
+    color: #b38600; /* Darker amber for the 'Important' tag */
+    margin-right: 5px;
+}
+
+/* The CTA Button/Link */
+.disclaimer-link {
+    background-color: #ffc107; /* Solid amber */
+    color: #000000; /* High contrast black text */
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Hover & Active States */
+.disclaimer-link:hover {
+    background-color: #ffca2c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.disclaimer-link:active {
+    transform: translateY(0);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .disclaimer-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 16px;
+    }
+    
+    .disclaimer-link {
+        width: 100%;
+    }
+}
+
+
 .bot-dashboard {
     --translate-panel-rtl: -367px;
     --translate-panel-ltr: 367px;

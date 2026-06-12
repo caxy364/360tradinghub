@@ -229,8 +229,18 @@ export const recoverFromError = (promiseFn, recoverFn, errors_to_ignore, delay_i
                  * `!api_base.is_running` will check the bot status if it is not running it will kick out the control from loop
                  */
                 if (shouldThrowError(error, errors_to_ignore) || (api_base && !api_base.is_running)) {
-                    // Check if this is a position limit exceeded error
-                    if (error?.error?.code === 'OpenPositionLimitExceeded') {
+                    const stop_trading_errors = [
+                        'OpenPositionLimit',
+                        'OpenPositionLimitExceeded',
+                        'OpenPositionPayoutLimit',
+                        'SpecificOpenPositionLimitExceeded',
+                        'CompanyWideLimitExceeded',
+                        'DailyProfitLimitExceeded',
+                        'ProductSpecificTurnoverLimitExceeded',
+                        'MaxAggregateOpenStakeExceeded',
+                    ];
+
+                    if (stop_trading_errors.includes(error?.error?.code)) {
                         // Emit click_stop event to trigger the stopBot method in run-panel-store
                         setTimeout(() => {
                             globalObserver.emit('bot.stop_button_click');

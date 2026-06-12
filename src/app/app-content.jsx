@@ -4,7 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import AuthLoadingWrapper from '@/components/auth-loading-wrapper';
 import useLiveChat from '@/components/chat/useLiveChat';
 import ChunkLoader from '@/components/loader/chunk-loader';
-import { getUrlBase } from '@/components/shared';
+import { getUrlBase, isEnded } from '@/components/shared';
 import TransactionDetailsModal from '@/components/transaction-details';
 import { api_base, ApiHelpers, ServerTime } from '@/external/bot-skeleton';
 import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
@@ -78,7 +78,7 @@ const AppContent = observer(() => {
             if (data?.msg_type === 'proposal_open_contract' && !data?.error) {
                 const { proposal_open_contract } = data;
                 if (
-                    proposal_open_contract?.status !== 'open' &&
+                    isEnded(proposal_open_contract) &&
                     !recovered_transactions?.includes(proposal_open_contract?.contract_id)
                 ) {
                     recoverPendingContracts(proposal_open_contract);

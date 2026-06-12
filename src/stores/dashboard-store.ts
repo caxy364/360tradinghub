@@ -30,6 +30,7 @@ type TDialogOptions = {
 
 export interface IDashboardStore {
     active_tab: number;
+    selected_signal_component: string;
     dialog_options: TDialogOptions;
     faq_search_value: string | null;
     has_mobile_preview_loaded: boolean;
@@ -43,6 +44,7 @@ export interface IDashboardStore {
     onCloseTour: (param: Partial<string>) => void;
     onTourEnd: (step: number, is_tour_active: boolean) => void;
     setActiveTab: (active_tab: number) => void;
+    setSelectedSignalComponent: (selected_signal_component: string) => void;
     setActiveTabTutorial: (active_tab_tutorials: number) => void;
     setFAQSearchValue: (faq_search_value: string) => void;
     setInfoPanelVisibility: (visibility: boolean) => void;
@@ -74,6 +76,7 @@ export default class DashboardStore implements IDashboardStore {
         makeObservable(this, {
             active_tab_tutorials: observable,
             active_tab: observable,
+            selected_signal_component: observable,
             dialog_options: observable,
             faq_search_value: observable,
             getFileArray: observable,
@@ -92,6 +95,7 @@ export default class DashboardStore implements IDashboardStore {
             onCloseTour: action.bound,
             onTourEnd: action.bound,
             setActiveTab: action.bound,
+            setSelectedSignalComponent: action.bound,
             setActiveTabTutorial: action.bound,
             setWebSocketState: action.bound,
             setFAQSearchValue: action.bound,
@@ -179,6 +183,7 @@ export default class DashboardStore implements IDashboardStore {
     }
 
     active_tab = 0;
+    selected_signal_component = 'oracle';
     active_tab_tutorials = 0;
     active_tour_step_number = 0;
     dialog_options: TDialogOptions = {};
@@ -348,6 +353,10 @@ export default class DashboardStore implements IDashboardStore {
     setActiveTab = (active_tab: number): void => {
         this.active_tab = active_tab;
         localStorage.setItem('active_tab', active_tab.toString());
+    };
+
+    setSelectedSignalComponent = (selected_signal_component: string): void => {
+        this.selected_signal_component = selected_signal_component;
     };
 
     setActiveTabTutorial = (active_tab_tutorials: number): void => {

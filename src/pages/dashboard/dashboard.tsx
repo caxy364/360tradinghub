@@ -58,10 +58,25 @@ const DashboardComponent = observer(({ handleTabChange }: TMobileIconGuide) => {
                                 className={classNames('subtitle', { 'subtitle__has-list': has_dashboard_strategies })}
                             >
                                 {localize(
-                                    'Import a bot from your computer or Google Drive, build it from scratch, or start with a quick strategy.'
+                                    'Welcome to 360 Trading Hub. Serving your trading needs for more than 3 years and still strong with more advanced tools & Bots.'
                                 )}
                             </Text>
                         </div>
+                        <div className="disclaimer-banner">
+                        <div className="disclaimer-content">
+                            <p className="disclaimer-text">
+                                <strong>Dont have an Account?</strong> Use this link to create your account with Deriv.
+                            </p>
+                        </div> 
+                        <a 
+                            href="https://track.deriv.com/_UEAPSNb_-9X1hit6RV3zsGNd7ZgqdRLk/1/" 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="disclaimer-link"
+                        >
+                            Open Account
+                        </a>
+                    </div>    
                         <Cards has_dashboard_strategies={has_dashboard_strategies} is_mobile={!isDesktop} />
                     </div>
                 </div>

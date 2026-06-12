@@ -2,6 +2,7 @@ import { action, computed, makeObservable, observable, reaction } from 'mobx';
 import {
     getIndicativePrice,
     isAccumulatorContract,
+    isEnded,
     isEqualObject,
     isMultiplierContract,
     Validator,
@@ -91,7 +92,8 @@ export default class SummaryCardStore {
 
     get is_contract_completed() {
         return (
-            !!this.contract_info?.is_sold &&
+            !!this.contract_info &&
+            isEnded(this.contract_info) &&
             this.root_store.run_panel.contract_stage !== contract_stages.PURCHASE_RECEIVED
         );
     }

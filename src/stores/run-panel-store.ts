@@ -1,7 +1,8 @@
 import { action, computed, makeObservable, observable, reaction, runInAction } from 'mobx';
 import { botNotification } from '@/components/bot-notification/bot-notification';
 import { notification_message } from '@/components/bot-notification/bot-notification-utils';
-import { generateOAuthURL, isSafari, mobileOSDetect, standalone_routes } from '@/components/shared';
+import { generateOAuthURL, isEnded, isSafari, mobileOSDetect, standalone_routes } from '@/components/shared';
+import { DBOT_TABS } from '@/constants/bot-contents';
 import { contract_stages, TContractStage } from '@/constants/contract-stage';
 import { run_panel } from '@/constants/run-panel';
 import { ErrorTypes, MessageTypes, observer, unrecoverable_errors } from '@/external/bot-skeleton';
@@ -118,6 +119,37 @@ export default class RunPanelStore {
     // otherwise we keep opening new contracts and set the ContractStage to PURCHASE_SENT
     error_type: ErrorTypes | undefined = undefined;
 
+    isOverlordTab = () => Number(this.root_store?.dashboard?.active_tab) === DBOT_TABS.OVERLORD;
+    isElitePrimeTab = () => {
+        const active_tab = Number(this.root_store?.dashboard?.active_tab);
+        return active_tab === DBOT_TABS.ELITE_PRIME || active_tab === 3;
+    };
+    isSmartTraderTab = () => Number(this.root_store?.dashboard?.active_tab) === DBOT_TABS.SMART_TRADER;
+    isSignalsTab = () => {
+        const active_tab = Number(this.root_store?.dashboard?.active_tab);
+        return active_tab === DBOT_TABS.SIGNALS || active_tab === 4;
+    };
+    isOracleSignalTab = () => {
+        const selected_signal_component = this.root_store?.dashboard?.selected_signal_component;
+
+        return this.isSignalsTab() && selected_signal_component === 'oracle';
+    };
+    isEliteSignalTab = () => {
+        const selected_signal_component = this.root_store?.dashboard?.selected_signal_component;
+
+        return this.isSignalsTab() && selected_signal_component === 'elite';
+    };
+    isHedgeSignalTab = () => {
+        const selected_signal_component = this.root_store?.dashboard?.selected_signal_component;
+
+        return this.isSignalsTab() && selected_signal_component === 'hedge';
+    };
+    isUpdownSignalTab = () => {
+        const selected_signal_component = this.root_store?.dashboard?.selected_signal_component;
+
+        return this.isSignalsTab() && selected_signal_component === 'updown';
+    };
+
     get is_stop_button_visible() {
         return this.is_running || this.has_open_contract;
     }
@@ -160,6 +192,38 @@ export default class RunPanelStore {
     };
 
     onRunButtonClick = async () => {
+        if (this.isOverlordTab()) {
+            observer.emit('overlord.start');
+            return;
+        }
+        if (this.isElitePrimeTab()) {
+            observer.emit('elitepremium.start');
+            return;
+        }
+        if (this.isSmartTraderTab()) {
+            observer.emit('smarttrader.start');
+            return;
+        }
+        if (this.isOracleSignalTab()) {
+            observer.emit('oracle.start');
+            return;
+        }
+        if (this.isEliteSignalTab()) {
+            observer.emit('elite.start');
+            return;
+        }
+        if (this.isHedgeSignalTab()) {
+            observer.emit('dualbot.start');
+            return;
+        }
+        if (this.isUpdownSignalTab()) {
+            observer.emit('higherlower.start');
+            return;
+        }
+        if (this.isSignalsTab()) {
+            return;
+        }
+
         let timer_counter = 1;
         if (window.sendRequestsStatistic) {
             performance.clearMeasures();
@@ -218,6 +282,39 @@ export default class RunPanelStore {
 
     onStopButtonClick = () => {
         this.is_contract_buying_in_progress = false;
+
+        if (this.isOverlordTab()) {
+            observer.emit('overlord.stop');
+            return;
+        }
+        if (this.isElitePrimeTab()) {
+            observer.emit('elitepremium.stop');
+            return;
+        }
+        if (this.isSmartTraderTab()) {
+            observer.emit('smarttrader.stop');
+            return;
+        }
+        if (this.isOracleSignalTab()) {
+            observer.emit('oracle.stop');
+            return;
+        }
+        if (this.isEliteSignalTab()) {
+            observer.emit('elite.stop');
+            return;
+        }
+        if (this.isHedgeSignalTab()) {
+            observer.emit('dualbot.stop');
+            return;
+        }
+        if (this.isUpdownSignalTab()) {
+            observer.emit('higherlower.stop');
+            return;
+        }
+        if (this.isSignalsTab()) {
+            return;
+        }
+
         const { is_multiplier } = this.root_store.summary_card;
 
         if (is_multiplier) {
@@ -229,6 +326,38 @@ export default class RunPanelStore {
 
     onStopBotClick = () => {
         this.is_contract_buying_in_progress = false;
+
+        if (this.isOverlordTab()) {
+            observer.emit('overlord.stop');
+            return;
+        }
+        if (this.isElitePrimeTab()) {
+            observer.emit('elitepremium.stop');
+            return;
+        }
+        if (this.isSmartTraderTab()) {
+            observer.emit('smarttrader.stop');
+            return;
+        }
+        if (this.isOracleSignalTab()) {
+            observer.emit('oracle.stop');
+            return;
+        }
+        if (this.isEliteSignalTab()) {
+            observer.emit('elite.stop');
+            return;
+        }
+        if (this.isHedgeSignalTab()) {
+            observer.emit('dualbot.stop');
+            return;
+        }
+        if (this.isUpdownSignalTab()) {
+            observer.emit('higherlower.stop');
+            return;
+        }
+        if (this.isSignalsTab()) {
+            return;
+        }
 
         const { is_multiplier } = this.root_store.summary_card;
         const { summary_card } = this.root_store;
@@ -625,8 +754,8 @@ export default class RunPanelStore {
         observer.emit('statistics.clear');
     };
 
-    onBotContractEvent = (data: { is_sold?: boolean }) => {
-        if (data?.is_sold) {
+    onBotContractEvent = (data: Partial<ProposalOpenContract>) => {
+        if (data && isEnded(data as ProposalOpenContract)) {
             this.is_sell_requested = false;
             this.setContractStage(contract_stages.CONTRACT_CLOSED);
         }

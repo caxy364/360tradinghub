@@ -32,7 +32,6 @@ import {
 import {
     LabelPairedChartLineCaptionRegularIcon,
     LabelPairedObjectsColumnCaptionRegularIcon,
-    LabelPairedPuzzlePieceTwoCaptionBoldIcon,
 } from '@deriv/quill-icons/LabelPaired';
 import { LegacyGuide1pxIcon } from '@deriv/quill-icons/Legacy';
 import { Localize, localize } from '@deriv-com/translations';
@@ -42,6 +41,15 @@ import ChartModal from '../chart/chart-modal';
 import Dashboard from '../dashboard';
 import RunStrategy from '../dashboard/run-strategy';
 import './main.scss';
+
+import { RiAlertFill } from 'react-icons/ri';
+import ComingSoon from '../customizations/standalones/comingsoon';
+import { FaSpinner, FaUikit, FaFireAlt, FaEdge, FaCode, FaListAlt } from 'react-icons/fa';
+import Overlord from '../customizations/SignalTools/Overlord';
+import CustomDash from '../customizations/SignalTools/CustomDash';
+import ElitePremium from '../customizations/SignalTools/ElitePremium';
+import AiBots from '../customizations/tradingbots/Aibots';
+import SmartTrader from '../customizations/standalones/SmartTrader';
 
 const ChartWrapper = lazy(() => import('../chart/chart-wrapper'));
 const Tutorial = lazy(() => import('../tutorials'));
@@ -77,7 +85,17 @@ const AppWrapper = observer(() => {
     const { clear } = summary_card;
     const { DASHBOARD, BOT_BUILDER } = DBOT_TABS;
     const init_render = React.useRef(true);
-    const hash = ['dashboard', 'bot_builder', 'chart', 'tutorial'];
+    const hash = [
+        'dashboard',
+        'bot_builder',
+        'overlord',
+        'elite_prime',
+        'signals',
+        'bots',
+        'smart_trader',
+        'chart',
+        'tutorial',
+    ];
     const { isDesktop } = useDevice();
     const location = useLocation();
     const navigate = useNavigate();
@@ -362,6 +380,12 @@ const AppWrapper = observer(() => {
         }
     };
     // [/AI]
+
+    const [showOverlay, setShowOverlay] = useState(false);
+
+    const handleOpen = () => setShowOverlay(true);
+
+    const handleClose = () => setShowOverlay(false);
     return (
         <React.Fragment>
             <div className='main'>
@@ -379,7 +403,7 @@ const AppWrapper = observer(() => {
                                         <LabelPairedObjectsColumnCaptionRegularIcon
                                             height='24px'
                                             width='24px'
-                                            fill='var(--text-general)'
+                                            fill='#0dc526'
                                         />
                                         <Localize i18n_default_text='Dashboard' />
                                     </>
@@ -391,23 +415,79 @@ const AppWrapper = observer(() => {
                             <div
                                 label={
                                     <>
-                                        <LabelPairedPuzzlePieceTwoCaptionBoldIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='var(--text-general)'
-                                        />
+                                        <FaCode height='24px' width='24px' fill='#0dc526' />
                                         <Localize i18n_default_text='Bot Builder' />
                                     </>
                                 }
                                 id='id-bot-builder'
                             />
+
+                            <div
+                                label={
+                                    <>
+                                        <FaFireAlt height='24px' width='24px' fill='#0dc526' />
+                                        <Localize i18n_default_text='Overlord-2026' />
+                                    </>
+                                }
+                                id='id-overlord'
+                            >
+                                <Overlord />
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <FaEdge height='24px' width='24px' fill='#0dc526' />
+                                        <Localize i18n_default_text='Elite Prime AI' />
+                                    </>
+                                }
+                                id='id-elite-prime'
+                            >
+                                <ElitePremium />
+                            </div>
+
+                            <div
+                                label={
+                                    <>
+                                        <FaSpinner height='24px' width='24px' fill='#0dc526' />
+                                        <Localize i18n_default_text='Signal Zone' />
+                                    </>
+                                }
+                                id='id-signals'
+                            >
+                                <CustomDash />
+                            </div>
+
+                            <div
+                                label={
+                                    <>
+                                        <FaListAlt height='24px' width='24px' fill='#0dc526' />
+                                        <Localize i18n_default_text='Free Bots' />
+                                    </>
+                                }
+                                id='id-bots'
+                            >
+                                <AiBots />
+                            </div>
+
+                            <div
+                                label={
+                                    <>
+                                        <FaUikit height='24px' width='24px' fill='#0dc526' />
+                                        <Localize i18n_default_text='Smart Trader' />
+                                    </>
+                                }
+                                id='id-smart-trader'
+                            >
+                                <SmartTrader />
+                            </div>
+
                             <div
                                 label={
                                     <>
                                         <LabelPairedChartLineCaptionRegularIcon
                                             height='24px'
                                             width='24px'
-                                            fill='var(--text-general)'
+                                            fill='#0dc526'
                                         />
                                         <Localize i18n_default_text='Charts' />
                                     </>
@@ -427,12 +507,7 @@ const AppWrapper = observer(() => {
                             <div
                                 label={
                                     <>
-                                        <LegacyGuide1pxIcon
-                                            height='16px'
-                                            width='16px'
-                                            fill='var(--text-general)'
-                                            className='icon-general-fill-g-path'
-                                        />
+                                        <LegacyGuide1pxIcon height='16px' width='16px' fill='#0dc526' />
                                         <Localize i18n_default_text='Tutorials' />
                                     </>
                                 }
@@ -495,6 +570,36 @@ const AppWrapper = observer(() => {
                     />
                 );
             })()}
+
+            <button onClick={handleOpen} className='risk-btn'>
+                <RiAlertFill /> Risk Disclaimer!
+            </button>
+
+            {showOverlay && (
+                <div className='overlayy'>
+                    <div className='overlayy-content'>
+                        <h2>Risk Disclaimer</h2>
+                        <p>
+                            Deriv offers complex derivatives, such as options and contracts for difference (“CFDs”).
+                            These products may not be suitable for all clients, and trading them puts you at risk.
+                            Please make sure that you understand the following risks before trading Deriv products:
+                        </p>
+                        <ul>
+                            <li>You may lose some or all of the money you invest in the trade.</li>
+                            <li>
+                                If your trade involves currency conversion, exchange rates will affect your profit and
+                                loss.
+                            </li>
+                            <li>
+                                You should never trade with borrowed money or with money that you cannot afford to lose.
+                            </li>
+                        </ul>
+                        <button onClick={handleClose} className='close-btnn'>
+                            I UNDERSTAND
+                        </button>
+                    </div>
+                </div>
+            )}
         </React.Fragment>
     );
 });

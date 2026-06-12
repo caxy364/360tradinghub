@@ -1,11 +1,11 @@
 {
-    "brand_name": "YourBrand",
-    "brand_domain": "yourbrand.com",
+    "brand_name": "360 Hub V2",
+    "brand_domain": "app.bmtraders.site",
     "brand_hostname": {
-        "staging": "staging.yourbrand.com/dashboard",
-        "production": "yourbrand.com/dashboard"
+        "staging": "staging.bmtraders.site/",
+        "production": "app.bmtraders.site/"
     },
-    "domain_name": "YourBrand.com",
+    "domain_name": "app.bmtraders.site",
     "colors": {
         "primary": "#3b82f6",
         "secondary": "#64748b",
@@ -73,10 +73,10 @@
         },
         "hostname": {
             "production": {
-                "com": "bot.yourbrand.com"
+                "com": "app.bmtraders.site"
             },
             "staging": {
-                "com": "staging-bot.yourbrand.com"
+                "com": "staging-bot.bmtraders.site"
             }
         },
         "auth2_url": {

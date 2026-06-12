@@ -18,6 +18,12 @@ import {
 } from '@deriv/quill-icons/Illustration';
 import { Localize, localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
+import { FaRobot, FaRocket } from 'react-icons/fa';
+import { FaComputer } from 'react-icons/fa6';
+import { HiDevicePhoneMobile } from 'react-icons/hi2';
+import { PiTrafficSignalBold } from 'react-icons/pi';
+
+import { LuChartArea } from 'react-icons/lu';
 /* [AI] - Analytics event tracking removed - see migrate-docs/MONITORING_PACKAGES.md for re-implementation guide */
 /* [/AI] */
 import DashboardBotList from './bot-list/dashboard-bot-list';
@@ -58,46 +64,71 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
         {
             id: 'my-computer',
             icon: is_mobile ? (
-                <DerivLightLocalDeviceIcon height='48px' width='48px' />
+                <HiDevicePhoneMobile size={48} color='#8684db' />
             ) : (
-                <DerivLightMyComputerIcon height='48px' width='48px' />
+                <FaComputer size={48} color='#8684db' />
             ),
-            content: is_mobile ? <Localize i18n_default_text='Local' /> : <Localize i18n_default_text='My computer' />,
+            content: is_mobile ? (
+                <span style={{ fontWeight: 'bold' }}>
+                    <Localize i18n_default_text='Import' />
+                </span>
+            ) : (
+                <span style={{ fontWeight: 'bold' }}>
+                    <Localize i18n_default_text='Upload Bot' />
+                </span>
+            ),
             callback: () => {
                 openFileLoader();
-                /* [AI] - Analytics event tracking removed - see migrate-docs/MONITORING_PACKAGES.md for re-implementation guide */
-                /* [/AI] */
+                rudderStackSendOpenEvent({
+                    subpage_name: 'bot_builder',
+                    subform_source: 'dashboard',
+                    subform_name: 'load_strategy',
+                    load_strategy_tab: 'local',
+                });
             },
         },
+
         {
-            id: 'google-drive',
-            icon: <DerivLightGoogleDriveIcon height='48px' width='48px' />,
-            content: <Localize i18n_default_text='Google Drive' />,
+            id: 'bot-builder',
+            icon: <LuChartArea size={48} color='#17ab0a' />,
+            content: (
+                <span style={{ fontWeight: 'bold' }}>
+                    <Localize i18n_default_text='Smart Trader' />
+                </span>
+            ),
             callback: () => {
-                openGoogleDriveDialog();
-                /* [AI] - Analytics event tracking removed - see migrate-docs/MONITORING_PACKAGES.md for re-implementation guide */
-                /* [/AI] */
+                setActiveTab(DBOT_TABS.SMART_TRADER);
+            },
+        },
+
+        {
+            id: 'quick-strategy',
+            icon: <FaRobot size={48} color='rgb(13, 148, 238)' />,
+            content: (
+                <span style={{ fontWeight: 'bold' }}>
+                    <Localize i18n_default_text='Free Bots' />
+                </span>
+            ),
+            callback: () => {
+                setActiveTab(DBOT_TABS.BOTS);
+
+                rudderStackSendOpenEvent({
+                    subpage_name: 'bot_builder',
+                    subform_source: 'dashboard',
+                    subform_name: 'quick_strategy',
+                });
             },
         },
         {
             id: 'bot-builder',
-            icon: <DerivLightBotBuilderIcon height='48px' width='48px' />,
-            content: <Localize i18n_default_text='Bot Builder' />,
+            icon: <PiTrafficSignalBold size={48} color='#f5c609ff' />,
+            content: (
+                <span style={{ fontWeight: 'bold' }}>
+                    <Localize i18n_default_text='Signal Tools' />
+                </span>
+            ),
             callback: () => {
-                setActiveTab(DBOT_TABS.BOT_BUILDER);
-                /* [AI] - Analytics event tracking removed - see migrate-docs/MONITORING_PACKAGES.md for re-implementation guide */
-                /* [/AI] */
-            },
-        },
-        {
-            id: 'quick-strategy',
-            icon: <DerivLightQuickStrategyIcon height='48px' width='48px' />,
-            content: <Localize i18n_default_text='Quick strategy' />,
-            callback: () => {
-                setActiveTab(DBOT_TABS.BOT_BUILDER);
-                setFormVisibility(true);
-                /* [AI] - Analytics event tracking removed - see migrate-docs/MONITORING_PACKAGES.md for re-implementation guide */
-                /* [/AI] */
+                setActiveTab(DBOT_TABS.SIGNALS);
             },
         },
     ];

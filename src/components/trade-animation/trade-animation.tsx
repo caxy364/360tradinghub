@@ -24,6 +24,12 @@ type TTradeAnimation = {
 const TradeAnimation = observer(({ className, should_show_overlay }: TTradeAnimation) => {
     const { dashboard, run_panel, summary_card, blockly_store } = useStore();
     const { active_tab } = dashboard;
+    const normalized_active_tab = typeof active_tab === 'number' ? active_tab : Number(active_tab);
+    const safeActiveTab = Number.isFinite(normalized_active_tab) ? normalized_active_tab : DBOT_TABS.DASHBOARD;
+    const is_overlord_tab = safeActiveTab === DBOT_TABS.OVERLORD;
+    const is_signalhub_tab = safeActiveTab === DBOT_TABS.SIGNALS;
+    const is_elite_tab = safeActiveTab === DBOT_TABS.ELITE_PRIME;
+    const is_custom_tool_tab = is_overlord_tab || is_signalhub_tab || is_elite_tab;
     const { has_active_bot, has_saved_bots } = blockly_store;
     const { isMobile } = useDevice();
 
@@ -78,6 +84,8 @@ const TradeAnimation = observer(({ className, should_show_overlay }: TTradeAnima
         }
     }, [shouldDisable, is_stop_button_visible]);
 
+    const should_show_custom_stop = is_custom_tool_tab && is_stop_button_visible;
+
     const status_classes = ['', '', ''];
     const is_purchase_sent = contract_stage === (contract_stages.PURCHASE_SENT as unknown);
     const is_purchase_received = contract_stage === (contract_stages.PURCHASE_RECEIVED as unknown);
@@ -100,21 +108,21 @@ const TradeAnimation = observer(({ className, should_show_overlay }: TTradeAnima
 
     // Check if there are no active or saved bots
     const has_no_bots = !has_active_bot && !has_saved_bots;
-    const is_bot_builder_tab = active_tab === DBOT_TABS.BOT_BUILDER;
+    const is_bot_builder_tab = safeActiveTab === DBOT_TABS.BOT_BUILDER;
 
     // Disable the RUN button if:
     // 1. There are no active or saved bots AND the user is not in the bot builder tab
-    const should_disable_run = has_no_bots && !is_bot_builder_tab;
+    const should_disable_run = has_no_bots && !is_bot_builder_tab && !is_custom_tool_tab;
 
     const is_disabled = is_stop_button_visible ? false : shouldDisable || should_disable_run;
 
     // Show the tooltip when:
     // 1. The user is NOT in the bot builder tab, AND
     // 2. There are no bots
-    const should_show_tooltip = !is_stop_button_visible && !is_bot_builder_tab && has_no_bots;
+    const should_show_tooltip = !is_custom_tool_tab && !is_stop_button_visible && !is_bot_builder_tab && has_no_bots;
 
     const button_props = React.useMemo(() => {
-        if (is_stop_button_visible && !is_stop_button_disabled) {
+        if (should_show_custom_stop || (is_stop_button_visible && !is_stop_button_disabled)) {
             return {
                 id: 'db-animation__stop-button',
                 class: 'animation__stop-button',
@@ -128,12 +136,8 @@ const TradeAnimation = observer(({ className, should_show_overlay }: TTradeAnima
             text: <Localize i18n_default_text='Run' />,
             icon: <LabelPairedPlayLgFillIcon fill='#fff' />,
         };
-    }, [is_stop_button_visible, is_stop_button_disabled]);
+    }, [is_stop_button_visible, is_stop_button_disabled, should_show_custom_stop]);
     const show_overlay = should_show_overlay && is_contract_completed;
-
-    // Fix TypeScript error by ensuring active_tab is a number
-    // Use a fallback to dashboard if active_tab is undefined
-    const safeActiveTab = typeof active_tab === 'number' ? active_tab : DBOT_TABS.DASHBOARD;
 
     // Function to determine tooltip alignment based on run panel position
     const determineTooltipAlignment = (): string => {

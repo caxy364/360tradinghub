@@ -100,8 +100,21 @@ const TRADE_TYPE_ICONS = {
     ),
 };
 
+const TRADE_TYPE_ALIASES: Record<string, string> = {
+    RISE: 'CALL',
+    FALL: 'PUT',
+    EVEN: 'DIGITEVEN',
+    ODD: 'DIGITODD',
+    OVER: 'DIGITOVER',
+    UNDER: 'DIGITUNDER',
+    MATCHES: 'DIGITMATCH',
+    DIFFERS: 'DIGITDIFF',
+};
+
 export const TradeTypeIcon = ({ type, size, className }: { type: string; size?: IconSize; className?: string }) => {
-    const Icon = TRADE_TYPE_ICONS[type?.toUpperCase() as keyof typeof TRADE_TYPE_ICONS] || TRADE_TYPE_ICONS.unknown;
+    const normalized_type = type?.toUpperCase() || '';
+    const icon_key = (TRADE_TYPE_ALIASES[normalized_type] || normalized_type) as keyof typeof TRADE_TYPE_ICONS;
+    const Icon = TRADE_TYPE_ICONS[icon_key] || TRADE_TYPE_ICONS.unknown;
 
     return (
         <Suspense fallback={null}>

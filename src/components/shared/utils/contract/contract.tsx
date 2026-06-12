@@ -120,12 +120,17 @@ export const getCancellationPrice = (contract_info: TContractInfo) => {
     return cancellation_price;
 };
 
-export const isEnded = (contract_info: TContractInfo) =>
-    !!(
-        (contract_info.status && contract_info.status !== 'open') ||
-        contract_info.is_expired ||
-        contract_info.is_settleable
+export const isEnded = (contract_info: TContractInfo) => {
+    const normalized_status = String(contract_info?.status || '').toLowerCase();
+
+    return !!(
+        (normalized_status && normalized_status !== 'open') ||
+        contract_info?.is_expired ||
+        contract_info?.is_settleable ||
+        contract_info?.is_sold ||
+        contract_info?.sell_time
     );
+};
 
 export const isOpen = (contract_info: TContractInfo) => getContractStatus(contract_info) === 'open';
 

@@ -1,5 +1,6 @@
 import { getLocalizedErrorMessage } from '@/constants/backend-error-messages';
 import { LogTypes } from '../../../constants/messages';
+import { isContractClosed } from '../../../utils/contract';
 import { observer as globalObserver } from '../../../utils/observer';
 import { api_base } from '../../api/api-base';
 import { contractStatus, log } from '../utils/broadcast';
@@ -79,7 +80,7 @@ export default Engine =>
                             ).then(proposal_open_contract_response => {
                                 const { proposal_open_contract } = proposal_open_contract_response;
 
-                                if (!proposal_open_contract.is_sold) {
+                                if (!isContractClosed(proposal_open_contract)) {
                                     return Promise.reject(sell_error);
                                 }
 

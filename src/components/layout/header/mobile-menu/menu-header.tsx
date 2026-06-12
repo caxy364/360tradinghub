@@ -4,6 +4,7 @@ import { BrandLogo } from '@/components/layout/app-logo/BrandLogo';
 import { LabelPairedGlobeSmRegularIcon } from '@deriv/quill-icons';
 import { useTranslations } from '@deriv-com/translations';
 import { Text, useDevice } from '@deriv-com/ui';
+import MyLogo from '../logo/mylogo.png';
 
 type TMenuHeader = {
     hideLanguageSetting: boolean;
@@ -18,9 +19,14 @@ const MenuHeader = ({ hideLanguageSetting, openLanguageSetting }: TMenuHeader) =
 
     return (
         <div className='mobile-menu__header'>
-            {/* [AI] Show brand logo instead of "Menu" text */}
-            <BrandLogo width={100} height={28} fill='var(--text-general)' />
-            {/* [/AI] */}
+            {/* [AI] Show brand logo instead of "Menu" text 
+            <BrandLogo width={100} height={28} fill='var(--text-general)' />*/}
+           <div className='logo-section-mobile'>
+                                   <img src={MyLogo} alt='360 Trading Hub Logo' className='my-logo-mobile' />
+                                   <h2>
+                                       360 <span>Trading Hub</span>
+                                   </h2>
+                               </div>
 
             {!hideLanguageSetting && (
                 <button

@@ -10,18 +10,19 @@ import { useStore } from '@/hooks/useStore';
 import { navigateToTransfer } from '@/utils/transfer-utils';
 import { Localize } from '@deriv-com/translations';
 import { Header, useDevice, Wrapper } from '@deriv-com/ui';
-import { AppLogo } from '../app-logo';
 import AccountSwitcher from './account-switcher';
 import MenuItems from './menu-items';
 import MobileMenu from './mobile-menu';
 import './header.scss';
+import MyLogo from './logo/mylogo.png';
 
 const AppHeader = observer(() => {
     const { isDesktop } = useDevice();
     const { isAuthorizing, activeLoginid, setIsAuthorizing, authData } = useApiBase();
-    const { client } = useStore() ?? {};
+    const { client, ui } = useStore() ?? {};
     const [authTimeout, setAuthTimeout] = useState(false);
     const is_account_regenerating = client?.is_account_regenerating || false;
+    const shouldShowLogoSection = !ui?.is_mobile || !client?.is_logged_in;
 
     // Detect OAuth callback on mount (before App.tsx cleans up the URL).
     // When ?code=...&state=... is present the full auth flow can take 7-15 s
@@ -152,6 +153,7 @@ const AppHeader = observer(() => {
                                     <AccountSwitcher activeAccount={activeAccount} />
                                 </div>
                             )}
+                            
                             <Button
                                 primary
                                 disabled={client?.is_logging_out || !authData?.currency}
@@ -171,12 +173,19 @@ const AppHeader = observer(() => {
             ) {
                 return (
                     <div className='auth-actions'>
-                        <Button tertiary onClick={handleLogin}>
-                            <Localize i18n_default_text='Log in' />
-                        </Button>
-                        <Button primary_light onClick={handleSignup}>
-                            <Localize i18n_default_text='Sign up' />
-                        </Button>
+                        <button className='login-btn' onClick={handleLogin}>
+                            Log in
+                        </button>
+                       <a
+                    className='signup-btn' 
+                    href='https://track.deriv.com/_UEAPSNb_-9X1hit6RV3zsGNd7ZgqdRLk/1/'
+                    target="_blank"
+                    rel="noreferrer"
+                   
+                    
+                    >
+                        Sign up
+                    </a>
                     </div>
                 );
             }
@@ -235,7 +244,14 @@ const AppHeader = observer(() => {
             >
                 <Wrapper variant='left'>
                     <MobileMenu onLogout={handleLogout} />
-                    <AppLogo />
+                    {shouldShowLogoSection && (
+                        <div className='logo-section'>
+                            <img src={MyLogo} alt='360 Trading Hub Logo' className='my-logo' />
+                            <h2>
+                                360 <span>Trading Hub</span>
+                            </h2>
+                        </div>
+                    )}
                     {isDesktop ? <MenuItems /> : renderAccountSection('left')}
                 </Wrapper>
                 <Wrapper variant='right'>{renderAccountSection('right')}</Wrapper>

@@ -1,4 +1,5 @@
 import { getRoundedNumber } from '@/components/shared';
+import { isContractClosed } from '../../../utils/contract';
 import { api_base } from '../../api/api-base';
 import { contract as broadcastContract, contractStatus } from '../utils/broadcast';
 import { openContractReceived, sell } from './state/actions';
@@ -51,9 +52,9 @@ export default Engine =>
         }
 
         setContractFlags(contract) {
-            const { is_expired, is_valid_to_sell, is_sold, entry_tick } = contract;
+            const { is_expired, is_valid_to_sell, entry_tick } = contract;
 
-            this.isSold = Boolean(is_sold);
+            this.isSold = isContractClosed(contract);
             this.isSellAvailable = !this.isSold && Boolean(is_valid_to_sell);
             this.isExpired = Boolean(is_expired);
             this.hasEntryTick = Boolean(entry_tick);

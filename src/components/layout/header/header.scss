@@ -1,6 +1,85 @@
 @use 'components/shared/styles/constants' as *;
 @use 'components/shared/styles/mixins' as *;
 
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0px 15px;
+    /* Completely transparent background */
+    background: transparent;
+    /* Subtle blur ensures text doesn't clash with background patterns */
+    backdrop-filter: blur(4px);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+.logo-section-mobile {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0px 15px;
+    /* Completely transparent background */
+    background: transparent;
+    /* Subtle blur ensures text doesn't clash with background patterns */
+    backdrop-filter: blur(4px);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+
+.my-logo {
+    width: 60px;
+    height: 48px;
+    /* Adds a glow to the logo so it doesn't get lost on dark backgrounds */
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+}
+.my-logo-mobile {
+    width: 50px;
+    height: 48px;
+    /* Adds a glow to the logo so it doesn't get lost on dark backgrounds */
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+}
+
+.logo-section h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color:  var(--my-primary); /* Solid white for maximum visibility */
+    border: 1px solid  var(--icon-color);
+    padding: 5px 10px;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
+}
+.logo-section-mobile h2{
+    font-size: 1.2rem;
+}
+
+/* The 'Classy' Modern Touch: An animated underline on hover */
+.logo-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00ff83, transparent);
+    transition: width 0.4s ease;
+}
+
+.logo-section:hover::after {
+    width: 100%;
+}
+
+.logo-section:hover .my-logo {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 15px rgba(0, 255, 127, 0.5));
+}
+
+@media (max-width: 678px) {
+    .logo-section h2 {
+        display: none;
+    }
+}
 .app-header {
     &__account-settings {
         padding-inline-end: 1.2rem;
@@ -275,7 +354,6 @@
         color: var(--text-prominent);
         animation: auth-spinner-rotate 0.8s linear infinite;
     }
-
 }
 
 .deriv-accordion--underline {
@@ -283,6 +361,65 @@
 }
 
 @keyframes auth-spinner-rotate {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Container for alignment */
+.auth-actions {
+    display: flex;
+    align-items: center;
+    gap: 0px;
+}
+
+/* Universal styles for both buttons to maintain 'Minimal Height' */
+.auth-actions .login-btn,
+.auth-actions .signup-btn {
+    height: 27px !important; /* Forces a slim, modern height */
+    padding: 0 13px !important;
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    border-radius: 4px !important;
+    text-transform: none; /* Keeps it modern and readable */
+    transition: all 0.25s ease !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+/* LOGIN BUTTON: The 'Tertiary' Glass Look */
+.auth-actions .login-btn {
+    background: transparent !important;
+    color:  var(--my-primary);
+    border: 1px solid var(--my-primary);
+}
+
+.auth-actions .login-btn:hover {
+    background: rgba(159, 179, 240, 0.836) !important;
+   transform: translateY(-1px);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* SIGN UP BUTTON: The 'Primary' Success Look */
+.auth-actions .signup-btn {
+    background-color: var(--my-primary); /* Trading Green */
+    color: #ffff !important; /* Contrast against dark blue theme */
+    box-shadow: 0 2px 10px rgba(0, 255, 131, 0.15);
+}
+
+.auth-actions .signup-btn:hover {
+    background-color: #4441cf !important;
+    box-shadow: 0 4px 20px rgba(0, 255, 131, 0.4);
+    transform: translateY(-1px); /* Tactile lift effect */
+}
+
+/* Active state for a 'clicked' feel */
+.auth-actions .signup-btn:active {
+    transform: translateY(0);
 }
