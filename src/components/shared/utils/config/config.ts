@@ -109,16 +109,15 @@ export const generateOAuthURL = async (prompt?: string) => {
         sessionStorage.setItem('oauth_code_verifier_timestamp', Date.now().toString());
 
         const params = new URLSearchParams({
-            scope: 'trade',
+            scope: 'read trade admin',
             response_type: 'code',
             client_id: CLIENT_ID,
             redirect_uri: REDIRECT_URI,
             state: csrfToken,
             code_challenge: codeChallenge,
             code_challenge_method: 'S256',
+            prompt: prompt || 'consent',
         });
-
-        if (prompt) params.append('prompt', prompt);
 
         const finalUrl = `${authHost}?${params.toString()}`;
 
