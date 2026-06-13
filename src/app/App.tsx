@@ -1,14 +1,11 @@
 import { lazy, Suspense } from 'react';
-import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ChunkLoader from '@/components/loader/chunk-loader';
 import LocalStorageSyncWrapper from '@/components/localStorage-sync-wrapper';
 import RoutePromptDialog from '@/components/route-prompt-dialog';
 import { useAccountSwitching } from '@/hooks/useAccountSwitching';
 import { useLanguageFromURL } from '@/hooks/useLanguageFromURL';
-import { useOAuthCallback } from '@/hooks/useOAuthCallback';
 import { StoreProvider } from '@/hooks/useStore';
-import { OAuthTokenExchangeService } from '@/services/oauth-token-exchange.service';
 import { initializeI18n, localize, TranslationProvider } from '@deriv-com/translations';
 import CoreStoreProvider from './CoreStoreProvider';
 import './app-root.scss';
@@ -65,46 +62,14 @@ const router = createBrowserRouter([
  * Main App component
  *
  * Responsibilities:
- * 1. OAuth callback handling (via useOAuthCallback hook)
- * 2. Account switching from URL (via useAccountSwitching hook)
- * 3. Router provider setup
+ * 1. Account switching from URL (via useAccountSwitching hook)
+ * 2. Router provider setup
  *
- * All complex logic has been extracted into custom hooks for better maintainability
+ * OAuth callback is handled entirely by CallbackPage at /callback route.
  */
 function App() {
-    // Handle OAuth callback flow (CSRF validation + code extraction)
-    const { isProcessing, isValid, params, error, cleanupURL } = useOAuthCallback();
-
     // Handle account switching via URL parameter
     useAccountSwitching();
-
-    // Process the authorization code when OAuth callback is valid
-    React.useEffect(() => {
-        if (!isProcessing && isValid && params.code) {
-            // Exchange authorization code for access token
-            OAuthTokenExchangeService.exchangeCodeForToken(params.code)
-                .then(response => {
-                    if (response.access_token) {
-                        // Token exchange succeeded — redirect to home
-                        window.location.replace('/');
-                    } else if (response.error) {
-                        console.error('❌ Token exchange failed:', response.error);
-                        console.error('Error description:', response.error_description);
-                        // Clean up URL and return home on error
-                        cleanupURL();
-                        window.location.replace('/');
-                    }
-                })
-                .catch(err => {
-                    console.error('❌ Token exchange request failed:', err);
-                    cleanupURL();
-                    window.location.replace('/');
-                });
-        } else if (!isProcessing && error) {
-            console.error('OAuth callback error:', error);
-            window.location.replace('/');
-        }
-    }, [isProcessing, isValid, params.code, error, cleanupURL]);
 
     return <RouterProvider router={router} />;
 }
