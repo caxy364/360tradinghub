@@ -246,9 +246,9 @@ const AppHeader = observer(() => {
                     <MobileMenu onLogout={handleLogout} />
                     {shouldShowLogoSection && (
                         <div className='logo-section'>
-                            <img src={MyLogo} alt='360 Trading Hub Logo' className='my-logo' />
+                            <img src={MyLogo} alt='CaxyNexusAI TradingHub Logo' className='my-logo' />
                             <h2>
-                                360 <span>Trading Hub</span>
+                                CaxyNexusAI <span>TradingHub</span>
                             </h2>
                         </div>
                     )}
