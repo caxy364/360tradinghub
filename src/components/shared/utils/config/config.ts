@@ -8,7 +8,8 @@ import brandConfig from '../../../../../brand.config.json';
 
 export const CLIENT_ID = '33tzpx1fN9o4cX4h5Nrnp';
 
-export const REDIRECT_URI = 'https://caxynexusaitradinghub.vercel.app/callback';
+// Using domain_name from brand.config.json to ensure consistency
+export const REDIRECT_URI = `https://${brandConfig.domain_name}/callback`;
 
 // Construct WebSocket URLs from platform.derivws config
 export const WS_SERVERS = {
@@ -118,6 +119,10 @@ export const generateOAuthURL = async (prompt?: string) => {
         });
 
         if (prompt) params.append('prompt', prompt);
+
+        // Optional: app_id for Deriv API identification
+        const appId = process.env.APP_ID;
+        if (appId) params.append('app_id', appId);
 
         const finalUrl = `${authHost}?${params.toString()}`;
 
