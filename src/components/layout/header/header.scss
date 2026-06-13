@@ -28,14 +28,16 @@
 
 
 .my-logo {
-    width: 60px;
+    width: 160px;
     height: 48px;
+    object-fit: contain;
     /* Adds a glow to the logo so it doesn't get lost on dark backgrounds */
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
 }
 .my-logo-mobile {
-    width: 50px;
-    height: 48px;
+    width: 120px;
+    height: 40px;
+    object-fit: contain;
     /* Adds a glow to the logo so it doesn't get lost on dark backgrounds */
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
 }
