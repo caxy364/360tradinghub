@@ -116,8 +116,9 @@ export const generateOAuthURL = async (prompt?: string) => {
             state: csrfToken,
             code_challenge: codeChallenge,
             code_challenge_method: 'S256',
-            prompt: prompt || 'consent',
         });
+
+        if (prompt) params.append('prompt', prompt);
 
         const finalUrl = `${authHost}?${params.toString()}`;
 
