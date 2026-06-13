@@ -120,10 +120,6 @@ export const generateOAuthURL = async (prompt?: string) => {
 
         if (prompt) params.append('prompt', prompt);
 
-        // Optional: app_id for Deriv API identification
-        const appId = process.env.APP_ID;
-        if (appId) params.append('app_id', appId);
-
         const finalUrl = `${authHost}?${params.toString()}`;
 
         console.log('[OAuth] Production URL:', finalUrl);
