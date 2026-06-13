@@ -109,7 +109,7 @@ export const generateOAuthURL = async (prompt?: string) => {
         sessionStorage.setItem('oauth_code_verifier_timestamp', Date.now().toString());
 
         const params = new URLSearchParams({
-            scope: 'read trade admin',
+            scope: brandConfig.platform.oauth_scopes,
             response_type: 'code',
             client_id: CLIENT_ID,
             redirect_uri: REDIRECT_URI,

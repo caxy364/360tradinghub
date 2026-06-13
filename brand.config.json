@@ -83,6 +83,7 @@
             "production": "https://auth.deriv.com/oauth2/",
             "staging": "https://staging-auth.deriv.com/oauth2/"
         },
+        "oauth_scopes": "read trade admin",
         "derivws": {
             "url": {
                 "staging": "https://staging-api.derivws.com/trading/v1/",
