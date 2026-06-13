@@ -106,8 +106,7 @@ const AppHeader = observer(() => {
             setIsAuthorizing(true);
 
             // Generate OAuth URL with CSRF token and PKCE parameters
-            // prompt=consent forces Deriv's consent page to always show
-            const oauthUrl = await generateOAuthURL('consent');
+            const oauthUrl = await generateOAuthURL();
 
             if (oauthUrl) {
                 // Redirect to OAuth URL
