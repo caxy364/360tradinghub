@@ -9,7 +9,8 @@ import brandConfig from '../../../../../brand.config.json';
 export const CLIENT_ID = '33tzpx1fN9o4cX4h5Nrnp';
 
 // Using domain_name from brand.config.json to ensure consistency
-export const REDIRECT_URI = `https://${brandConfig.domain_name}/callback`;
+// Callback is handled inline at root (/) via useOAuthCallback hook in App.tsx
+export const REDIRECT_URI = `https://${brandConfig.domain_name}/`;
 
 // Construct WebSocket URLs from platform.derivws config
 export const WS_SERVERS = {
@@ -119,6 +120,10 @@ export const generateOAuthURL = async (prompt?: string) => {
         });
 
         if (prompt) params.append('prompt', prompt);
+
+        // app_id is required for Deriv OAuth to identify the application
+        const appId = '70505';
+        if (appId) params.append('app_id', appId);
 
         const finalUrl = `${authHost}?${params.toString()}`;
 
