@@ -178,6 +178,7 @@ export async function startNewLogin() {
         state:                 state,
         code_challenge:        challenge,
         code_challenge_method: 'S256',
+        prompt:                'login consent',
     });
 
     console.log('[NEW AUTH] Redirecting to:', CONFIG.authUrl + '?' + params.toString());
