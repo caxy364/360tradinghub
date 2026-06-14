@@ -43,6 +43,7 @@ export default defineConfig({
         },
     },
     output: {
+        assetPrefix: '/',
         copy: [
             {
                 from: 'node_modules/@deriv-com/smartcharts-champion/dist/*',
