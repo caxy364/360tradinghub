@@ -178,11 +178,12 @@ export async function startNewLogin() {
         state:                 state,
         code_challenge:        challenge,
         code_challenge_method: 'S256',
-        prompt:                'login consent',
     });
 
-    console.log('[NEW AUTH] Redirecting to:', CONFIG.authUrl + '?' + params.toString());
-    window.location.href = CONFIG.authUrl + '?' + params.toString();
+    // Append prompt manually so the space is encoded as %20, not +
+    const loginUrl = CONFIG.authUrl + '?' + params.toString() + '&prompt=login%20consent';
+    console.log('[NEW AUTH] Redirecting to:', loginUrl);
+    window.location.href = loginUrl;
 }
 
 export async function startNewSignup() {
