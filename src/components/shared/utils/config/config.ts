@@ -8,9 +8,9 @@ import brandConfig from '../../../../../brand.config.json';
 
 export const CLIENT_ID = '33tzpx1fN9o4cX4h5Nrnp';
 
-// Using domain_name from brand.config.json to ensure consistency
-// Callback is handled inline at root (/) via useOAuthCallback hook in App.tsx
-export const REDIRECT_URI = `https://${brandConfig.domain_name}/`;
+// Dynamic redirect URI — always points to the current origin's /callback route.
+// This works on any domain (Replit dev, deployed, custom) without hardcoding.
+export const REDIRECT_URI = `${window.location.origin}/callback`;
 
 // Construct WebSocket URLs from platform.derivws config
 export const WS_SERVERS = {
