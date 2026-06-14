@@ -497,19 +497,24 @@ export async function createNewWebSocket() {
                 setIsAuthorizing,
             } = await import('@/external/bot-skeleton/services/api/observables/connection-status-stream');
 
-            const accountList = accountsArray.map(acc => ({
-                loginid:   acc.account_id || acc.id,
-                currency:  acc.currency || 'USD',
-                is_virtual: acc.account_type === 'demo' ? 1 : 0,
-                account_type: 'trading',
-                is_disabled: 0,
-                created_at: 0,
-                landing_company_name: 'virtual',
-                account_category: 'trading',
-                broker: '',
-                currency_type: 'crypto',
-                linked_to: [],
-            }));
+            const accountList = accountsArray.map(acc => {
+                const lid      = acc.account_id || acc.id;
+                const decimals = acc.currency === 'BTC' || acc.currency === 'ETH' ? 8 : 2;
+                return {
+                    loginid:      lid,
+                    currency:     acc.currency || 'USD',
+                    balance:      parseFloat(parseFloat(acc.balance || '0').toFixed(decimals)),
+                    is_virtual:   acc.account_type === 'demo' ? 1 : 0,
+                    account_type: 'trading',
+                    is_disabled:  0,
+                    created_at:   0,
+                    landing_company_name: 'virtual',
+                    account_category:    'trading',
+                    broker:        '',
+                    currency_type: 'fiat',
+                    linked_to:     [],
+                };
+            });
 
             setAccountList(accountList);
             setAuthData({
