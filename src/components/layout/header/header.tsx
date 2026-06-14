@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import { isNewLoggedIn } from '@/auth/NewDerivAuth';
 import { generateOAuthURL } from '@/components/shared';
 import Button from '@/components/shared_ui/button';
 import useActiveAccount from '@/hooks/api/account/useActiveAccount';
@@ -28,9 +29,14 @@ const AppHeader = observer(() => {
     // When ?code=...&state=... is present the full auth flow can take 7-15 s
     // (token exchange → accounts fetch → OTP → WebSocket auth), so we must
     // suppress the short fallback timeout and keep the spinner throughout.
+    // Also suppress when we have a saved auth token but active_loginid hasn't
+    // been wired up yet — this covers the post-callback redirect to "/" where
+    // the URL is clean but createNewWebSocket() is still running.
     const [isOAuthPending, setIsOAuthPending] = useState(() => {
         const params = new URLSearchParams(window.location.search);
-        return Boolean(params.get('code') && params.get('state'));
+        const hasCallbackParams = Boolean(params.get('code') && params.get('state'));
+        const hasTokenButNoAccount = isNewLoggedIn() && !localStorage.getItem('active_loginid');
+        return hasCallbackParams || hasTokenButNoAccount;
     });
 
     const { data: activeAccount } = useActiveAccount({
