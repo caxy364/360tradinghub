@@ -44,12 +44,23 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
     }, [is_bot_running, isSingleAccount]);
 
     const handleAccountSelect = useCallback(
-        (loginid: string) => {
-            localStorage.setItem('active_loginid', loginid);
-            client?.checkAndRegenerateWebSocket();
+        async (loginid: string) => {
+            if (loginid === activeLoginid) {
+                setIsOpen(false);
+                return;
+            }
             setIsOpen(false);
+            try {
+                const { switchNewAccount } = await import('@/auth/NewDerivAuth');
+                await switchNewAccount(loginid);
+            } catch (e) {
+                console.error('[AccountSwitcher] Failed to switch account:', e);
+                // Fallback to legacy path
+                localStorage.setItem('active_loginid', loginid);
+                client?.checkAndRegenerateWebSocket();
+            }
         },
-        [client]
+        [activeLoginid, client]
     );
 
     const formattedAccounts = useMemo(() => {

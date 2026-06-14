@@ -580,6 +580,21 @@ export async function createNewWebSocket() {
                         };
                     }
                     if (balanceData.accounts) {
+                        // Update the account list observable so the header re-renders with fresh balances
+                        import('@/external/bot-skeleton/services/api/observables/connection-status-stream')
+                            .then(({ account_list$, setAccountList }) => {
+                                const current = account_list$.getValue();
+                                if (current && current.length > 0) {
+                                    const updated = current.map(acc => {
+                                        const fresh = balanceData.accounts[acc.loginid];
+                                        return fresh
+                                            ? { ...acc, balance: parseFloat(fresh.balance ?? fresh.balance) }
+                                            : acc;
+                                    });
+                                    setAccountList(updated);
+                                }
+                            })
+                            .catch(() => {});
                         window.dispatchEvent(
                             new CustomEvent('new-system-balance', { detail: balanceData })
                         );
@@ -608,4 +623,39 @@ export async function createNewWebSocket() {
     };
 
     return ws;
+}
+
+/**
+ * Switch the active trading account without a full page reload.
+ * Closes the current authenticated WS, updates active_loginid,
+ * then re-runs createNewWebSocket() which picks up the new loginid.
+ */
+export async function switchNewAccount(loginid) {
+    console.log('[NEW AUTH] Switching account to:', loginid);
+
+    // Close existing authenticated WS so onclose auto-reconnect doesn't fire
+    if (window._newSystemWS) {
+        const old = window._newSystemWS;
+        old.onclose = null; // suppress auto-reconnect
+        old.close();
+        window._newSystemWS = null;
+        window._newSystemWSReady = false;
+        window._newSystemTopicsSubscribed = false;
+    }
+
+    // Update the target account before reconnecting
+    localStorage.setItem('active_loginid', loginid);
+
+    // Signal UI that auth is in progress
+    try {
+        const { setIsAuthorized, setIsAuthorizing } =
+            await import('@/external/bot-skeleton/services/api/observables/connection-status-stream');
+        setIsAuthorized(false);
+        setIsAuthorizing(true);
+    } catch (e) {
+        console.warn('[NEW AUTH] Could not set authorizing state:', e);
+    }
+
+    // Open new authenticated WS for the chosen account
+    await createNewWebSocket();
 }
