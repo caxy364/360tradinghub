@@ -23,6 +23,9 @@ const NewSystemCallbackHandler = () => {
                     setStatus('success');
                     await new Promise(resolve => setTimeout(resolve, 1200));
                     window.location.href = '/';
+                } else {
+                    // Already handled (e.g. HMR re-mount) — go home
+                    window.location.replace('/');
                 }
             } catch (err: any) {
                 console.error('[CALLBACK] Error:', err.message);
@@ -96,6 +99,11 @@ const CallbackPage = () => {
     if (hasCode && !hasOldTokens) {
         return <NewSystemCallbackHandler />;
     }
+
+    // No recognised params — redirect home immediately
+    React.useEffect(() => {
+        window.location.replace('/');
+    }, []);
 
     return (
         <div style={{ padding: '40px', textAlign: 'center' }}>
