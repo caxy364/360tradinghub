@@ -79,9 +79,10 @@ export default defineConfig({
         hmr: true,
         assetPrefix: '/',
         client: {
-            host: process.env.REPLIT_DEV_DOMAIN || '',
-            port: '443',
-            protocol: 'wss',
+            host: process.env.REPLIT_DEV_DOMAIN || 'localhost',
+            port: process.env.REPLIT_DEV_DOMAIN ? '443' : '5000',
+            protocol: process.env.REPLIT_DEV_DOMAIN ? 'wss' : 'ws',
+            path: '/rsbuild-hmr',
         },
     },
     performance: {
