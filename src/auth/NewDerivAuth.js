@@ -376,11 +376,26 @@ export async function createNewWebSocket() {
 
     const accounts = accountsData.data || accountsData;
     const accountsArray = Array.isArray(accounts) ? accounts : accounts ? [accounts] : [];
+
+    // Normalize: Deriv API may use account_id, id, or loginid depending on the endpoint
+    const normalizeId = acc => acc.account_id ?? acc.id ?? acc.loginid ?? '';
+
     const savedLoginId = localStorage.getItem('active_loginid');
-    const account = savedLoginId
-        ? accountsArray.find(acc => (acc.id || acc.account_id) === savedLoginId) || accountsArray[0]
-        : accountsArray[0];
-    const accountId = account?.id || account?.account_id;
+    let account = savedLoginId
+        ? accountsArray.find(acc => normalizeId(acc) === savedLoginId)
+        : null;
+
+    if (!account) {
+        if (savedLoginId) {
+            console.warn(
+                `[NEW WS] Saved loginid "${savedLoginId}" not found in accounts ` +
+                `[${accountsArray.map(normalizeId).join(', ')}]. Falling back to first account.`
+            );
+        }
+        account = accountsArray[0];
+    }
+
+    const accountId = normalizeId(account);
 
     const legacyAccountsList = {};
     const legacyClientAccounts = {};

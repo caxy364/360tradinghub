@@ -1,0 +1,110 @@
+You are working on a modern DerivWS-based trading application (NEW Deriv API, not legacy).
+
+🎯 Objective
+
+Fix the account switching → balance mismatch bug where:
+
+Demo account shows 0.00 balance
+Real account shows 0.00 balance
+But correct balance exists in header or other parts of UI
+🔴 Root cause (already identified from code review)
+
+The issue is caused by:
+
+Account identity mismatch between account_id and UI loginid
+Using localStorage.active_loginid instead of MobX reactive store
+Wallet/balance not refreshing when account changes
+WebSocket reconnect not guaranteeing correct account authorization
+Fallback to accounts[0] when account match fails
+🛠️ REQUIRED FIX (STRICT SCOPE ONLY)
+1. Fix account identification mismatch
+
+In DerivWSAccountsService.getAuthenticatedWebSocketURL:
+
+Replace unsafe matching logic:
+
+DO NOT rely solely on account_id
+Ensure compatibility with both:
+account_id
+loginid
+Add safe normalization:
+const normalizeId = (acc: any) => acc.account_id ?? acc.loginid;
+
+Then replace account matching with:
+
+const targetAccount =
+  accounts.find(a => normalizeId(a) === activeLoginId) || accounts[0];
+2. REMOVE dependency on localStorage for active account
+
+Replace:
+
+localStorage.getItem('active_loginid')
+
+WITH reactive MobX source:
+
+accountStore.activeLoginId
+
+If store is not directly accessible here, pass it as parameter instead of using localStorage.
+
+3. Ensure wallet refresh on account switch
+
+When account changes, ensure this sequence exists somewhere central (NOT UI only):
+
+REQUIRED FLOW:
+setActiveLoginId(newLoginId)
+→ reconnect websocket OR re-authorize
+→ fetch accounts/balance again
+→ update wallet store
+
+If missing, add a controlled refresh trigger (do NOT over-engineer):
+
+walletStore.refresh(activeLoginId);
+4. Fix silent fallback bug
+
+DO NOT silently fallback without warning:
+
+Replace:
+
+|| accounts[0]
+
+WITH:
+
+if (!targetAccount) {
+    throw new Error('Active account not found in account list');
+}
+
+OR log warning before fallback.
+
+5. Ensure WebSocket always binds to correct account
+
+When generating WebSocket URL:
+
+Must always use resolved targetAccount.account_id
+Must NOT reuse previous session connection
+Must guarantee account context consistency per session
+🚫 DO NOT DO THE FOLLOWING
+Do NOT refactor entire service architecture
+Do NOT change API endpoints
+Do NOT introduce Redux or new state systems
+Do NOT modify UI layout or components
+Do NOT change unrelated services
+Do NOT touch error handling system in CommonStore
+✅ EXPECTED RESULT AFTER FIX
+
+After account switch:
+
+Demo account shows correct balance instantly
+Real account shows correct balance instantly
+No 0.00 fallback states
+WebSocket always matches selected account
+Wallet updates automatically on switch
+🧪 VALIDATION
+
+After changes:
+
+Switch Demo → Real → Demo
+Verify:
+account_id changes correctly
+websocket reconnects
+balance updates correctly
+no fallback to accounts[0]

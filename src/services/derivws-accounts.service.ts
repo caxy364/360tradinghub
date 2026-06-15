@@ -233,19 +233,31 @@ export class DerivWSAccountsService {
     }
 
     /**
+     * Normalize an account object to a consistent id string.
+     * Deriv API may return `account_id` or `loginid` depending on the endpoint.
+     */
+    private static normalizeId(acc: DerivAccount & { loginid?: string }): string {
+        return acc.account_id ?? acc.loginid ?? '';
+    }
+
+    /**
      * Complete flow to get authenticated WebSocket URL with optimized caching
      * 1. Check if accounts are already in sessionStorage (skip fetch on refresh)
      * 2. If not in storage, fetch accounts list
-     * 3. Store accounts in sessionStorage
-     * 4. Get default account (first from list)
-     * 5. Fetch OTP and WebSocket URL for that account (always fresh OTP)
+     * 3. Resolve the active account using the provided loginId (falls back to accounts[0])
+     * 4. Fetch OTP and WebSocket URL for that account (always fresh OTP)
      *
-     * @param accessToken Bearer token from OAuth authentication
+     * @param accessToken  Bearer token from OAuth authentication
+     * @param activeLoginId The loginid to activate (caller should pass this reactively;
+     *                      falls back to localStorage only when omitted)
      * @returns Promise with WebSocket URL
      */
-    static async getAuthenticatedWebSocketURL(accessToken: string): Promise<string> {
+    static async getAuthenticatedWebSocketURL(
+        accessToken: string,
+        activeLoginId?: string
+    ): Promise<string> {
         try {
-            let accounts: DerivAccount[] | null = null;
+            let accounts: (DerivAccount & { loginid?: string })[] | null = null;
 
             // Step 1: Check if accounts are already stored (optimization for refresh)
             const storedAccounts = this.getStoredAccounts();
@@ -260,14 +272,28 @@ export class DerivWSAccountsService {
                 }
             }
 
-            // Step 3: Resolve which account to connect as.
-            // On an account switch the caller has already written the new loginid to
-            // localStorage before triggering a WebSocket regeneration, so we honour
-            // that selection here instead of always falling back to accounts[0].
-            const activeLoginId = localStorage.getItem('active_loginid');
-            const targetAccount = (activeLoginId && accounts.find(a => a.account_id === activeLoginId)) || accounts[0];
+            // Step 3: Resolve the target account.
+            // Accept the loginId from the caller so account switching does not depend on
+            // localStorage being written at exactly the right moment.
+            const resolvedLoginId = activeLoginId ?? localStorage.getItem('active_loginid') ?? '';
+
+            let targetAccount = resolvedLoginId
+                ? accounts.find(a => this.normalizeId(a) === resolvedLoginId)
+                : null;
+
+            if (!targetAccount) {
+                if (resolvedLoginId) {
+                    console.warn(
+                        `[DerivWS] Active account "${resolvedLoginId}" not found in account list ` +
+                        `[${accounts.map(a => this.normalizeId(a)).join(', ')}]. ` +
+                        `Falling back to first account.`
+                    );
+                }
+                targetAccount = accounts[0];
+            }
 
             // Step 4: Fetch OTP and WebSocket URL for the resolved account (always fresh OTP)
+            // Always use targetAccount.account_id — never the raw loginId string
             const websocketURL = await this.fetchOTPWebSocketURL(accessToken, targetAccount.account_id);
             return websocketURL;
         } catch (error) {

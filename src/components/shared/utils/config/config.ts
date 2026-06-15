@@ -36,8 +36,14 @@ export const getSocketURL = async (): Promise<string> => {
         const authInfo = OAuthTokenExchangeService.getAuthInfo();
         if (!authInfo?.access_token) return getDefaultServerURL();
 
-        // Orchestrates the flow to get authenticated WS URL
-        return await DerivWSAccountsService.getAuthenticatedWebSocketURL(authInfo.access_token);
+        // Pass activeLoginId reactively so account switching works correctly.
+        // Reading from localStorage here is intentional — the caller (account switcher)
+        // writes the new loginid to localStorage before invoking getSocketURL.
+        const activeLoginId = localStorage.getItem('active_loginid') ?? undefined;
+        return await DerivWSAccountsService.getAuthenticatedWebSocketURL(
+            authInfo.access_token,
+            activeLoginId
+        );
     } catch (error) {
         console.error('[DerivWS] Socket URL Error:', error);
         return getDefaultServerURL();
