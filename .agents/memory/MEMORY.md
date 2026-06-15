@@ -1,2 +1,3 @@
 - [360 Trading Hub merge](360-trading-hub-merge.md) — master branch IS the production 360 hub; Linux case-sensitivity bit us on custom component imports
 - [New Deriv OAuth login flow](new-deriv-auth-flow.md) — new zip uses NewDerivAuth.js + /callback route + dynamic REDIRECT_URI; project was missing all three
+- [Run button logout bug](run-button-logout-bug.md) — dual WS system conflict caused logout on Run click; fixed in api-base.ts authorizeAndSubscribe + reconnectIfNotConnected

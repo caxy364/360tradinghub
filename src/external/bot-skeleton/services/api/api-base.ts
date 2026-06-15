@@ -232,19 +232,7 @@ class APIBase {
             this.reconnection_attempts += 1;
 
             if (this.reconnection_attempts >= this.MAX_RECONNECTION_ATTEMPTS) {
-                // Reset reconnection counter
                 this.reconnection_attempts = 0;
-
-                // Properly handle logout through the API
-                setIsAuthorized(false);
-                setAccountList([]);
-                setAuthData(null);
-
-                // Clear necessary storage items
-                localStorage.removeItem('active_loginid');
-                localStorage.removeItem('account_type');
-                localStorage.removeItem('accountsList');
-                localStorage.removeItem('clientAccounts');
             }
 
             this.init(true);
@@ -256,6 +244,81 @@ class APIBase {
 
         this.account_id = getAccountId() || '';
         setIsAuthorizing(true);
+
+        // If the new OTP-authenticated WebSocket (NewDerivAuth) is already active,
+        // skip calling balance() on the legacy public WebSocket — it is not OTP-authenticated
+        // and will fail, which previously triggered a spurious clearAuthData()/logout.
+        // Instead, reconstruct auth state from the data already cached by createNewWebSocket().
+        if ((window as any)._newSystemWSReady) {
+            try {
+                const activeLoginId = localStorage.getItem('active_loginid') || '';
+                const cachedBalancesStr = sessionStorage.getItem('cached_balances');
+                const cachedBalances = cachedBalancesStr ? JSON.parse(cachedBalancesStr) : {};
+                const cachedAccount = cachedBalances[activeLoginId];
+
+                const storedAccounts = DerivWSAccountsService.getStoredAccounts();
+                const accountList =
+                    storedAccounts && storedAccounts.length > 0
+                        ? storedAccounts
+                              .filter(a => !a.status || a.status === 'active')
+                              .map(a => ({
+                                  balance: parseFloat(a.balance) || 0,
+                                  currency: a.currency || 'USD',
+                                  is_virtual: a.account_type === 'demo' ? 1 : 0,
+                                  loginid: a.account_id,
+                              }))
+                        : [];
+
+                const currency = cachedAccount?.currency || 'USD';
+                const balance = cachedAccount ? parseFloat(cachedAccount.balance) : 0;
+                const account_type = getAccountType(activeLoginId);
+
+                this.account_info = { balance, currency, loginid: activeLoginId };
+                this.token = activeLoginId;
+
+                setAccountList(accountList);
+                setAuthData({
+                    balance,
+                    currency,
+                    loginid: activeLoginId,
+                    is_virtual: account_type === 'real' ? 0 : 1,
+                    account_list: accountList,
+                });
+
+                const isDemo = isDemoAccount(activeLoginId);
+                localStorage.setItem('account_type', isDemo ? 'demo' : 'real');
+
+                globalObserver.emit('api.authorize', {
+                    account_list: accountList,
+                    current_account: {
+                        loginid: activeLoginId,
+                        currency,
+                        is_virtual: account_type === 'real' ? 0 : 1,
+                        balance,
+                    },
+                });
+
+                const currentClientStore = globalObserver.getState('client.store');
+                if (currentClientStore && activeLoginId) {
+                    currentClientStore.setWebSocketLoginId(activeLoginId);
+                }
+
+                setIsAuthorized(true);
+                this.is_authorized = true;
+                localStorage.setItem('client_account_details', JSON.stringify(accountList));
+
+                if (this.has_active_symbols) {
+                    this.toggleRunButton(false);
+                } else {
+                    this.active_symbols_promise = this.getActiveSymbols();
+                }
+            } catch (e) {
+                console.warn('[APIBase] New-system auth setup failed, skipping legacy flow:', e);
+            } finally {
+                setIsAuthorizing(false);
+            }
+            return;
+        }
 
         try {
             const { balance, error } = await this.api.balance();
@@ -358,8 +421,13 @@ class APIBase {
             this.subscribe();
         } catch (e) {
             this.is_authorized = false;
-            clearAuthData();
-            setIsAuthorized(false);
+            // Only clear auth data if the new system is also not active.
+            // If _newSystemWSReady is true, the user IS authenticated via OTP;
+            // clearing auth here would cause a spurious logout.
+            if (!(window as any)._newSystemWSReady) {
+                clearAuthData();
+                setIsAuthorized(false);
+            }
             globalObserver.emit('Error', e);
         } finally {
             setIsAuthorizing(false);
