@@ -673,4 +673,17 @@ export async function switchNewAccount(loginid) {
 
     // Open new authenticated WS for the chosen account
     await createNewWebSocket();
+
+    // Re-initialize the api_base WebSocket for the new account.
+    // getSocketURL() will now fetch a fresh OTP for the new loginid,
+    // ensuring api_base.api is connected to the correct account (not the public URL).
+    try {
+        const { api_base } = await import('@/external/bot-skeleton/services/api/api-base');
+        // Clear the OTP cache so getSocketURL() fetches a fresh one for the new account
+        const { DerivWSAccountsService } = await import('@/services/derivws-accounts.service');
+        DerivWSAccountsService.clearCache();
+        await api_base.init(true);
+    } catch (e) {
+        console.warn('[NEW AUTH] Could not reinitialize api_base for new account:', e);
+    }
 }

@@ -33,17 +33,31 @@ const getDefaultServerURL = () => {
 
 export const getSocketURL = async (): Promise<string> => {
     try {
+        // Prefer the old OAuth flow token (auth_info in sessionStorage)
         const authInfo = OAuthTokenExchangeService.getAuthInfo();
-        if (!authInfo?.access_token) return getDefaultServerURL();
-
-        // Pass activeLoginId reactively so account switching works correctly.
-        // Reading from localStorage here is intentional — the caller (account switcher)
-        // writes the new loginid to localStorage before invoking getSocketURL.
         const activeLoginId = localStorage.getItem('active_loginid') ?? undefined;
-        return await DerivWSAccountsService.getAuthenticatedWebSocketURL(
-            authInfo.access_token,
-            activeLoginId
-        );
+
+        if (authInfo?.access_token) {
+            return await DerivWSAccountsService.getAuthenticatedWebSocketURL(
+                authInfo.access_token,
+                activeLoginId
+            );
+        }
+
+        // Fall back to the new auth flow token (NEW_AUTH_token in localStorage).
+        // This is the token stored by NewDerivAuth.js after PKCE OAuth login.
+        // Using it here ensures api_base.api gets an OTP-authenticated WS URL
+        // instead of the unauthenticated public URL.
+        const { getNewToken } = await import('@/auth/NewDerivAuth');
+        const newToken = getNewToken();
+        if (newToken) {
+            return await DerivWSAccountsService.getAuthenticatedWebSocketURL(
+                newToken,
+                activeLoginId
+            );
+        }
+
+        return getDefaultServerURL();
     } catch (error) {
         console.error('[DerivWS] Socket URL Error:', error);
         return getDefaultServerURL();
