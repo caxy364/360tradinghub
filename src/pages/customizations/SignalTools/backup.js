@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2';
 
 import { WS_SERVERS, isProduction } from '@/components/shared';
+import { getDerivAuthContext } from '@/utils/deriv-auth-context';
 import { contract_stages } from '@/constants/contract-stage';
 import { run_panel as run_panel_tabs } from '@/constants/run-panel';
 import { observer } from '@/external/bot-skeleton';
@@ -215,50 +216,7 @@ const Overlord = () => {
         console.log(msg);
     };
 
-    const getStoredAuthContext = useCallback(() => {
-        try {
-            const authRaw = sessionStorage.getItem('auth_info');
-            const accountsRaw = sessionStorage.getItem('deriv_accounts');
-
-            if (!authRaw || !accountsRaw) {
-                const newToken = localStorage.getItem('NEW_AUTH_token');
-                const newExpiry = localStorage.getItem('NEW_AUTH_expiry');
-                if (newToken && newExpiry && Date.now() < Number(newExpiry)) {
-                    const activeLoginId = localStorage.getItem('active_loginid');
-                    const detailsRaw = localStorage.getItem('client_account_details');
-                    const details = detailsRaw ? JSON.parse(detailsRaw) : [];
-                    const accountsArr = Array.isArray(details) ? details : [];
-                    const normalized = accountsArr.map(a => ({ ...a, account_id: a.account_id || a.loginid }));
-                    const activeAccount = normalized.find(a => a.account_id === activeLoginId) || normalized[0];
-                    if (activeAccount?.account_id) return { accessToken: newToken, activeAccount };
-                }
-                return null;
-            }
-
-            const { access_token } = JSON.parse(authRaw);
-            const accounts = JSON.parse(accountsRaw);
-
-            if (!access_token || !Array.isArray(accounts) || accounts.length === 0) {
-                return null;
-            }
-
-            const activeLoginId = localStorage.getItem('active_loginid');
-            const activeAccount =
-                accounts.find(acc => acc.account_id === activeLoginId) ||
-                accounts.find(acc => acc.account_id?.startsWith('DOT')) ||
-                accounts[0];
-
-            if (!activeAccount?.account_id) return null;
-
-            return {
-                accessToken: access_token,
-                activeAccount,
-            };
-        } catch (error) {
-            console.error('[Overlord] Failed to parse Deriv session storage:', error);
-            return null;
-        }
-    }, []);
+    const getStoredAuthContext = useCallback(getDerivAuthContext, []);
 
     const getAuthenticatedUrl = useCallback(async () => {
         try {

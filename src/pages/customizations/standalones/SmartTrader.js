@@ -3,6 +3,7 @@ import { FaPlay, FaStop } from 'react-icons/fa';
 import { IoChevronDown } from 'react-icons/io5';
 import Swal from 'sweetalert2';
 import { isProduction, WS_SERVERS } from '@/components/shared';
+import { getDerivAuthContext } from '@/utils/deriv-auth-context';
 import { contract_stages } from '@/constants/contract-stage';
 import { run_panel as run_panel_tabs } from '@/constants/run-panel';
 import { observer } from '@/external/bot-skeleton';
@@ -227,50 +228,7 @@ const SmartTrader = () => {
         clearRecoveryTimeouts();
     }, [clearRecoveryTimeouts]);
 
-    const getStoredAuthContext = useCallback(() => {
-        try {
-            const auth_raw = sessionStorage.getItem('auth_info');
-            const accounts_raw = sessionStorage.getItem('deriv_accounts');
-
-            if (!auth_raw || !accounts_raw) {
-                const newToken = localStorage.getItem('NEW_AUTH_token');
-                const newExpiry = localStorage.getItem('NEW_AUTH_expiry');
-                if (newToken && newExpiry && Date.now() < Number(newExpiry)) {
-                    const active_login_id = localStorage.getItem('active_loginid');
-                    const detailsRaw = localStorage.getItem('client_account_details');
-                    const details = detailsRaw ? JSON.parse(detailsRaw) : [];
-                    const accountsArr = Array.isArray(details) ? details : [];
-                    const normalized = accountsArr.map(a => ({ ...a, account_id: a.account_id || a.loginid }));
-                    const active_account = normalized.find(a => a.account_id === active_login_id) || normalized[0];
-                    if (active_account?.account_id) return { accessToken: newToken, activeAccount: active_account };
-                }
-                return null;
-            }
-
-            const { access_token } = JSON.parse(auth_raw);
-            const accounts = JSON.parse(accounts_raw);
-
-            if (!access_token || !Array.isArray(accounts) || accounts.length === 0) {
-                return null;
-            }
-
-            const active_login_id = localStorage.getItem('active_loginid');
-            const active_account =
-                accounts.find(account => account.account_id === active_login_id) ||
-                accounts.find(account => account.account_id?.startsWith('DOT')) ||
-                accounts[0];
-
-            if (!active_account?.account_id) return null;
-
-            return {
-                accessToken: access_token,
-                activeAccount: active_account,
-            };
-        } catch (error) {
-            console.error('[SmartTrader] Failed to parse Deriv session storage:', error);
-            return null;
-        }
-    }, []);
+    const getStoredAuthContext = useCallback(getDerivAuthContext, []);
 
     const getAuthenticatedUrl = useCallback(async () => {
         try {
