@@ -232,7 +232,20 @@ const SmartTrader = () => {
             const auth_raw = sessionStorage.getItem('auth_info');
             const accounts_raw = sessionStorage.getItem('deriv_accounts');
 
-            if (!auth_raw || !accounts_raw) return null;
+            if (!auth_raw || !accounts_raw) {
+                const newToken = localStorage.getItem('NEW_AUTH_token');
+                const newExpiry = localStorage.getItem('NEW_AUTH_expiry');
+                if (newToken && newExpiry && Date.now() < Number(newExpiry)) {
+                    const active_login_id = localStorage.getItem('active_loginid');
+                    const detailsRaw = localStorage.getItem('client_account_details');
+                    const details = detailsRaw ? JSON.parse(detailsRaw) : [];
+                    const accountsArr = Array.isArray(details) ? details : [];
+                    const normalized = accountsArr.map(a => ({ ...a, account_id: a.account_id || a.loginid }));
+                    const active_account = normalized.find(a => a.account_id === active_login_id) || normalized[0];
+                    if (active_account?.account_id) return { accessToken: newToken, activeAccount: active_account };
+                }
+                return null;
+            }
 
             const { access_token } = JSON.parse(auth_raw);
             const accounts = JSON.parse(accounts_raw);
