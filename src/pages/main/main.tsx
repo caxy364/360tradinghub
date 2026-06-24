@@ -44,7 +44,115 @@ import './main.scss';
 
 import { RiAlertFill } from 'react-icons/ri';
 import ComingSoon from '../customizations/standalones/comingsoon';
-import { FaSpinner, FaUikit, FaFireAlt, FaEdge, FaCode, FaListAlt, FaChartBar } from 'react-icons/fa';
+import { FaSpinner, FaUikit, FaFireAlt, FaEdge, FaCode, FaListAlt } from 'react-icons/fa';
+
+const DTraderIcon = () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#dtrader-gradient1)" />
+        <path d="M2 17L12 22L22 17" fill="url(#dtrader-gradient2)" />
+        <path d="M2 12L12 17L22 12" fill="url(#dtrader-gradient3)" />
+        <circle cx="12" cy="12" r="2" fill="white" />
+        <defs>
+            <linearGradient id="dtrader-gradient1" x1="2" y1="2" x2="22" y2="12" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#2ECC71" />
+                <stop offset="1" stopColor="#27AE60" />
+            </linearGradient>
+            <linearGradient id="dtrader-gradient2" x1="2" y1="17" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#27AE60" />
+                <stop offset="1" stopColor="#2ECC71" />
+            </linearGradient>
+            <linearGradient id="dtrader-gradient3" x1="2" y1="12" x2="22" y2="17" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#2ECC71" />
+                <stop offset="1" stopColor="#27AE60" />
+            </linearGradient>
+        </defs>
+    </svg>
+);
+
+const DTraderStyles = React.memo(() => (
+    <style>{`
+        .dtrader-fullscreen {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 18rem);
+            overflow: hidden;
+            background: #ffffff;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        @media (max-width: 768px) {
+            .dtrader-fullscreen {
+                height: calc(100vh - 14rem);
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+            }
+        }
+        .dtrader-fullscreen iframe {
+            width: 100% !important;
+            height: 100% !important;
+            border: none !important;
+            border-radius: 12px;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            z-index: 1;
+            transform: scale(0.98);
+            transform-origin: center center;
+            transition: transform 0.3s ease;
+        }
+        .dtrader-fullscreen iframe:hover {
+            transform: scale(1);
+        }
+        #id-dtrader .dc-tabs__content {
+            padding: 0 !important;
+            margin: 0 !important;
+            position: relative;
+            height: calc(100vh - 8rem);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @media (max-width: 768px) {
+            #id-dtrader .dc-tabs__content {
+                height: calc(100vh - 6rem);
+            }
+        }
+        #id-dtrader .dc-tabs__content > div {
+            height: auto;
+            min-height: 85%;
+            max-height: 95%;
+            width: 98%;
+            margin: 0 auto;
+            position: relative;
+        }
+        @media (min-width: 1024px) {
+            .dtrader-fullscreen {
+                height: calc(100vh - 16rem);
+                max-width: 1400px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            #id-dtrader .dc-tabs__content > div {
+                min-height: 90%;
+                max-height: 98%;
+                width: 95%;
+            }
+            .dtrader-fullscreen iframe {
+                transform: scale(1);
+            }
+        }
+        @media (min-width: 1600px) {
+            .dtrader-fullscreen {
+                height: calc(100vh - 14rem);
+                max-width: 1600px;
+            }
+        }
+    `}</style>
+));
 import Overlord from '../customizations/SignalTools/Overlord';
 import CustomDash from '../customizations/SignalTools/CustomDash';
 import ElitePremium from '../customizations/SignalTools/ElitePremium';
@@ -390,6 +498,7 @@ const AppWrapper = observer(() => {
     const handleClose = () => setShowOverlay(false);
     return (
         <React.Fragment>
+            <DTraderStyles />
             <div className='main'>
                 <div
                     className={classNames('main__container', {
@@ -486,13 +595,15 @@ const AppWrapper = observer(() => {
                             <div
                                 label={
                                     <>
-                                        <FaChartBar height='24px' width='24px' fill='#0dc526' />
+                                        <DTraderIcon />
                                         <Localize i18n_default_text='DTrader' />
                                     </>
                                 }
                                 id='id-dtrader'
                             >
-                                <DTraderTab />
+                                <div className="dtrader-fullscreen">
+                                    <DTraderTab />
+                                </div>
                             </div>
 
                             <div
