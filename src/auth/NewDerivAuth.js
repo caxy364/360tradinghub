@@ -400,14 +400,15 @@ export async function createNewWebSocket() {
     const legacyAccountsList = {};
     const legacyClientAccounts = {};
     const legacyClientDetails = [];
+    const realToken = getNewToken() || '';
     accountsArray.forEach(acc => {
         const lid = acc.account_id || acc.id;
-        legacyAccountsList[lid] = lid;
-        legacyClientAccounts[lid] = { loginid: lid, token: lid, currency: acc.currency || 'USD' };
+        legacyAccountsList[lid] = realToken;
+        legacyClientAccounts[lid] = { loginid: lid, token: realToken, currency: acc.currency || 'USD' };
         legacyClientDetails.push({
             loginid: lid,
             currency: acc.currency || 'USD',
-            token: lid,
+            token: realToken,
             created_at: 0,
             is_virtual: acc.account_type === 'demo' ? 1 : 0,
             is_disabled: 0,
@@ -479,7 +480,7 @@ export async function createNewWebSocket() {
         window._newSystemWSReady = true;
 
         localStorage.setItem('active_loginid', accountId);
-        localStorage.setItem('authToken', accountId);
+        localStorage.setItem('authToken', realToken);
 
         try {
             const cachedBalances = {};

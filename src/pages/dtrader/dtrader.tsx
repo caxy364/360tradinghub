@@ -8,9 +8,14 @@ const getTokenAndCurrency = () => {
     try {
         const loginId = localStorage.getItem('active_loginid') || '';
 
-        // accountsList stores { loginid: derivApiToken } — the correct Deriv API token
+        // accountsList now correctly stores { loginid: bearerToken }
         const accountsList: Record<string, string> = JSON.parse(localStorage.getItem('accountsList') || '{}');
-        const token = accountsList[loginId] || '';
+        // Fall back to authToken, then directly to the OAuth bearer token stored by NewDerivAuth
+        const token =
+            accountsList[loginId] ||
+            localStorage.getItem('authToken') ||
+            localStorage.getItem('NEW_AUTH_token') ||
+            '';
 
         // clientAccounts stores full account details including currency
         const clientAccounts: Record<string, { currency?: string }> = JSON.parse(
