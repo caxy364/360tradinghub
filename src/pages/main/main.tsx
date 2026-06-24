@@ -44,10 +44,11 @@ import './main.scss';
 
 import { RiAlertFill } from 'react-icons/ri';
 import ComingSoon from '../customizations/standalones/comingsoon';
-import { FaSpinner, FaUikit, FaFireAlt, FaEdge, FaCode, FaListAlt } from 'react-icons/fa';
+import { FaSpinner, FaUikit, FaFireAlt, FaEdge, FaCode, FaListAlt, FaChartBar } from 'react-icons/fa';
 import Overlord from '../customizations/SignalTools/Overlord';
 import CustomDash from '../customizations/SignalTools/CustomDash';
 import ElitePremium from '../customizations/SignalTools/ElitePremium';
+import { DTraderTab } from '../dtrader/dtrader';
 import AiBots from '../customizations/tradingbots/Aibots';
 import SmartTrader from '../customizations/standalones/SmartTrader';
 
@@ -93,6 +94,7 @@ const AppWrapper = observer(() => {
         'signals',
         'bots',
         'smart_trader',
+        'dtrader',
         'chart',
         'tutorial',
     ];
@@ -479,6 +481,18 @@ const AppWrapper = observer(() => {
                                 id='id-smart-trader'
                             >
                                 <SmartTrader />
+                            </div>
+
+                            <div
+                                label={
+                                    <>
+                                        <FaChartBar height='24px' width='24px' fill='#0dc526' />
+                                        <Localize i18n_default_text='DTrader' />
+                                    </>
+                                }
+                                id='id-dtrader'
+                            >
+                                <DTraderTab />
                             </div>
 
                             <div
